@@ -1,1 +1,1 @@
-declare const pecsBuilder: any;
+declare const ninja: any;

@@ -1,6 +1,8 @@
 import path from "path";
 import fs from "fs";
 
+const REGEX_DOWNLOADED_FILENAME = /(?<=attachment; filename=").*(?=";)/g;
+
 export const apagarArquivo = (arquivo: any) => {
   const dir = path.join(__dirname, `../../uploads/${arquivo}`);
   return new Promise((resolve, reject) => {
@@ -49,6 +51,38 @@ export const listFiles = async (dirPath: string) => {
           arquivos.push(file);
         });
         resolve(arquivos);
+      });
+    });
+  };
+
+  export const saveDownloadedFile = (response:any, dest:string, hasFileNameOnPath = false): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      var filePath:string;
+      if (hasFileNameOnPath) {
+          filePath = dest;
+      } else {
+        REGEX_DOWNLOADED_FILENAME.lastIndex = 0
+        const contentDispositionData = REGEX_DOWNLOADED_FILENAME.exec(response.headers["content-disposition"]);
+        let fileName = contentDispositionData[0];
+        filePath = path.resolve(__dirname, `${dest}/${fileName}`);
+      }
+      createFolderIfNotExists({ dirPath: path.dirname(filePath)});
+      const file = fs.createWriteStream(filePath);
+      response.pipe(file);
+  
+      file.on("finish", () => {
+        resolve(filePath);
+      });
+  
+      file.on("error", (err: any) => {
+        file.close();
+  
+        if (err.code === "EXIST") {
+          reject("File already exists");
+        } else {
+          fs.unlink(dest, () => {}); // Delete temp file
+          reject(Error(err.message));
+        }
       });
     });
   };

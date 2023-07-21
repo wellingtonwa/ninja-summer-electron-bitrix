@@ -9,8 +9,6 @@ const api: {
   [controller: string]: ControllerFunctions;
 } = {};
 
-console.log(">>>>>>>>>>", ipcRenderer.sendSync('getControllerActions'))
-
 ipcRenderer.sendSync('getControllerActions').forEach((controller: ActionController) => {
   api[controller.key] = controller.methods.reduce((object: ControllerFunctions, it: string) => {
     object[it] = (...args: any[]) => ipcRenderer.invoke(`${controller.key}:${it}`, ...args);
@@ -18,7 +16,7 @@ ipcRenderer.sendSync('getControllerActions').forEach((controller: ActionControll
   }, {});
 });
 
-contextBridge.exposeInMainWorld('pecsBuilder', {
+contextBridge.exposeInMainWorld('ninja', {
   ...api,
   isPackaged: () => ipcRenderer.sendSync('isPackaged'),
   on: (channel: string, listener: (...args: any[]) => void) => 

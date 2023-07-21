@@ -32,9 +32,7 @@ class EventService {
   }
 
   public registerControllers() {
-    console.log('>> EventService:registerControllers');
     if (!this.registered) {
-      console.log('>> EventService.controllers: ', this.controllers)
       this.controllers.forEach(controller => {
         const actionController: ActionController = {
           key: controller.name,
@@ -44,7 +42,6 @@ class EventService {
         Object.getOwnPropertyNames(Object.getPrototypeOf(controller.instance))
           .filter(it => it !== 'constructor')
           .forEach(it => {
-            console.log('Mapeando os metodos', it);
             this.registerIpcAction(`${controller.name}:${it}`, it, controller.instance);
             actionController.methods.push(it);
           });
@@ -57,7 +54,6 @@ class EventService {
   }
 
   public getControllerActions() {
-    console.log('>> EventService:getControllerActions');
     return this.actions;
   }
 

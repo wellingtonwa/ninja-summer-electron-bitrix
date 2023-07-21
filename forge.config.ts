@@ -15,7 +15,7 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   makers: [new MakerSquirrel({
-    setupExe: 'pecs-image-builder.exe'
+    setupExe: 'ninja-summer-electron-bitrix.exe'
   }), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
   plugins: [
     new AutoUnpackNativesPlugin({}),
@@ -34,6 +34,7 @@ const config: ForgeConfig = {
           },
         ],
       },
+      "port": 5001
     }),
   ],
 };

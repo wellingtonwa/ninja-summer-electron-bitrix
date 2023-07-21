@@ -1,15 +1,34 @@
 import { app, ipcMain } from "electron";
 import eventService from "./event.service";
-import windowsService from "./windows.service";
+import windowService from "./window.service";
+import { ScreenState } from "../../model/enumerated/screenState.enum";
+import { EVENT_SCREEN_STATE_CHANGE } from "../../constants";
+import configController from "../controllers/config.controller";
 
 class MainService {
 
   globalActionsRegistered = false;
+  screenState: ScreenState;
+
+  constructor() {
+    this.screenState = ScreenState.CONFIG;
+  }
+
+  async init() {
+    
+    if (configController.getConfiguracao()) {
+      this.screenState = ScreenState.HOME;
+    } else {
+      this.screenState = ScreenState.CONFIG;
+    }
+
+    this.initWindow();
+  }
 
   initWindow() {
     eventService.registerControllers();
     this.registerGlobalActions();
-    windowsService.createMainWindow();
+    windowService.createMainWindow();
   }
 
   registerGlobalActions() {
@@ -24,6 +43,12 @@ class MainService {
 
     this.globalActionsRegistered = true;
   }
+
+  setScreenState(newState: ScreenState) {
+    this.screenState = newState;
+    windowService.emitEvent(EVENT_SCREEN_STATE_CHANGE, this.screenState);
+  }
+
 }
 
 export default new MainService(); 

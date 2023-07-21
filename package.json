@@ -1,8 +1,8 @@
 {
-  "name": "pecs-electron",
-  "productName": "pecs-electron",
+  "name": "ninja-summer-electron-bitrix",
+  "productName": "Ninja Summer Electron Bitrix",
   "version": "1.0.0",
-  "description": "Pecs Image Maker",
+  "description": "Versão Electron do Ninja integrado com o Bitrix",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -27,7 +27,6 @@
     "@electron-forge/plugin-webpack": "^6.2.1",
     "@reduxjs/toolkit": "^1.9.5",
     "@types/copy-webpack-plugin": "^10.1.0",
-    "@types/jimp": "^0.2.28",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
@@ -40,7 +39,6 @@
     "eslint-plugin-import": "^2.25.0",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^7.2.13",
-    "jimp": "^0.22.8",
     "node-loader": "^2.0.0",
     "react-redux": "^8.1.1",
     "style-loader": "^3.0.0",
@@ -53,11 +51,16 @@
     "@mantine/core": "^6.0.16",
     "@mantine/form": "^6.0.16",
     "@mantine/hooks": "^6.0.16",
+    "@mantine/notifications": "^6.0.17",
+    "@tabler/icons-react": "^2.26.0",
     "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.4.0",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.1.0",
+    "lodash": "^4.17.21",
+    "pgtools": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.14.1",
-    "webp-converter": "^2.3.3"
+    "react-router-dom": "^6.14.1"
   }
 }

@@ -10,16 +10,6 @@ rules.push({
   use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
 });
 
-plugins.push(new CopyPlugin({
-  patterns: [
-    {from: 'assets/fonts/**', 
-    to({ context, absoluteFilename }) {
-      let newPath = absoluteFilename?.replace(`${context}/assets`, '');
-      return Promise.resolve(`../${newPath}`);
-    }}
-  ]
-}));
-
 export const rendererConfig: Configuration = {
   module: {
     rules
