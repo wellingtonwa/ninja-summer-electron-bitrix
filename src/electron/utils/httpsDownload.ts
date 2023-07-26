@@ -7,7 +7,6 @@ const REGEX_SERVER = /(https:\/\/[a-z._-]*)/g;
 
 export async function download(url:string, dest:string, hasFileNameOnPath = false): Promise<string> {
   return new Promise((resolve, reject) => {
-      //const file = fs.createWriteStream(dest);
 
       const request = https.get(url, async response => {
           

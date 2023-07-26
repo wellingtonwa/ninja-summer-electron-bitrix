@@ -10,6 +10,10 @@ class PostgresController {
     return await postgresService.hasConnection();
   }
 
+  async dropDatabase(database: string) {
+    return await postgresService.dropDatabase(database);
+  }
+
 }
 
 export default new PostgresController();

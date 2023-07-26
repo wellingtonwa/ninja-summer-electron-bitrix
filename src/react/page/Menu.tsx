@@ -11,7 +11,6 @@ export interface MenuProps {
 }
 
 const Menu: FC<MenuProps> = (props) => {
-  const elementRef = useRef<LogRefProps>();
 
   const navigateTo = (value: ScreenState) => {
     ninja.main.setScreenState(value); 
@@ -36,13 +35,7 @@ const Menu: FC<MenuProps> = (props) => {
           onClick={() => navigateTo(ScreenState.RESTORE)}
           icon={<IconDatabase/>}
         />
-        <NavLink
-          label="Mostra Log"
-          onClick={() => elementRef.current.showFunction()}
-          icon={<IconDatabase/>}
-        />
       </Drawer>
-      <Log ref={elementRef}/>
     </>
   )
 

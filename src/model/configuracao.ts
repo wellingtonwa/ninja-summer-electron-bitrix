@@ -7,6 +7,7 @@ export interface Configuracao {
   dbPrefix: string;
   dbDefaultDatabase: string;
   dbIgnore: string;
+  downloadPath: string;
   issueFolder?: string;
   configVersion?: string;
 }

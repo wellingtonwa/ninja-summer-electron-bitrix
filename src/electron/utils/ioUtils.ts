@@ -1,7 +1,9 @@
-import path from "path";
-import fs from "fs";
+import path from 'path';
+import fs from 'fs';
+import admZip from 'adm-zip';
 
 const REGEX_DOWNLOADED_FILENAME = /(?<=attachment; filename=").*(?=";)/g;
+const REGEX_ARQUIVOBACK = /.*\.backup$/g;
 
 export const apagarArquivo = (arquivo: any) => {
   const dir = path.join(__dirname, `../../uploads/${arquivo}`);
@@ -13,7 +15,7 @@ export const apagarArquivo = (arquivo: any) => {
   });
 };
 
-export const getFileContent = (params: any) => {
+export const getFileContent = (params: any): Promise<string> => {
   var mergedParams = params;
   if (!params.charset) mergedParams = {...params, ...{charset: 'utf-8'}}
   return new Promise((resolve, reject) => {
@@ -31,11 +33,12 @@ export const createFolderIfNotExists = (params: any) => {
     if (!fe){
       try {
         fs.mkdirSync(params.dirPath, options);
+        resolve(true);
       } catch(error) {
         reject(error);
       }
     } else {
-      resolve(false);
+      resolve(true);
     }
   });
 };
@@ -84,5 +87,30 @@ export const listFiles = async (dirPath: string) => {
           reject(Error(err.message));
         }
       });
+    });
+  }
+ 
+  export const descompactar = (params: {filePath: string, fileDest: string}): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (!params.fileDest) {
+        reject('O destino do arquivo não foi informado');
+      }
+      let zip = new admZip(params.filePath);
+      let zipEntries = zip.getEntries();
+      zipEntries.filter(it => it.entryName.match(REGEX_ARQUIVOBACK)).forEach(it => {
+        var fileDest;
+        if (params.fileDest) {
+          fileDest = params.fileDest + '/calima.backup'
+        }
+        
+        fs.writeFile(fileDest, it.getData(), function (err) {
+          if (err) {
+            console.log(err)
+            reject(err);
+          }
+        });
+        resolve(fileDest);
+      });
+      reject(Error("Arquivo não encontrado"))
     });
   };

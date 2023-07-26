@@ -1,5 +1,7 @@
 import { Client, Query } from 'pg';
 import configController from '../controllers/config.controller';
+import { exec } from 'child_process';
+import dockerService from './docker.service';
 
 export interface ConnectionConfigProps {
   user: string;
@@ -46,10 +48,14 @@ class PostgresService {
     return this.connection;
   }
 
-  query = async (query: string) => {    
+  async query (query: string) {    
     const result = await this.getConnection().query(query);
     return result.rowCount ? result.rows : null;
   };
+
+  async dropDatabase (database: string) {
+    await dockerService.droparDockerDatabaseTerminal(database);
+  }
 
 }
 

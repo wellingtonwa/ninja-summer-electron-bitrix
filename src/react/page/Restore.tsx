@@ -1,10 +1,14 @@
-import { Button, Container, Paper, Space, Tabs, TextInput, Title } from "@mantine/core";
+import { Button, Space, Tabs, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { IconDownload } from "@tabler/icons-react";
 import React, { FC } from "react";
 import { RestoreLink } from "../../model/restoreLink";
+import { useDispatch } from "react-redux";
+import { globalActions } from "../store/slice/global.slice";
 
 const Restore: FC = () => {
+
+  const dispatch = useDispatch();
 
   const form = useForm<RestoreLink>({
     initialValues: {
@@ -31,6 +35,7 @@ const Restore: FC = () => {
 
 const handleSubmit = (values: RestoreLink) => {
   ninja.restore.restoreLink(values);
+  dispatch(globalActions.setLogVisible(true));
 }
 
   return (

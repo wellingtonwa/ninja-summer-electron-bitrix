@@ -1,6 +1,9 @@
-import { Button, Dialog, Textarea } from "@mantine/core";
-import { useClickOutside, useDisclosure } from "@mantine/hooks";
-import React, { FC, useState, forwardRef, useImperativeHandle, useRef } from "react";
+import React, { FC, useState, useEffect } from "react";
+import { Affix, Collapse, Dialog, Textarea, rem } from "@mantine/core";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store";
+import { GlobalState, globalActions } from "../store/slice/global.slice";
+import { EVENT_APPEND_LOG } from "../../constants";
 
 
 export interface LogRefProps {
@@ -9,42 +12,38 @@ export interface LogRefProps {
   closeFunction: () => void;
 };
 
-interface Props {
-
-};
-
-const Log = forwardRef<LogRefProps, Props>((props, ref) => {
-  const [opened, {open, close}] = useDisclosure(false);
+const Log:FC = () => {
+  
+  const dispatch = useDispatch();
+  const {logVisible} = useSelector<RootState, GlobalState>(state => state.global);
   const [texto, setTexto] = useState("");
-  const componentRef = useRef<LogRefProps>();
+
+  useEffect(
+    () => {
+      ninja.on(EVENT_APPEND_LOG, appendLog);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const closeLog = () => {
+    dispatch(globalActions.setLogVisible(false));
+  }
 
   const appendLog = (txt: string) => {
-    setTexto(prevState => txt + "\n" + prevState);
+    setTexto(prevState => `> ${txt}\n${prevState}`);
   };
-
-  useImperativeHandle(ref, () => {
-    return {
-      currentState() {
-        return opened;
-      },
-      showFunction() {
-        open();
-      },
-      closeFunction() {
-        close();
-      }
-    }
-  });
-
 
   return (
     <>
-      <Dialog opened={opened} withCloseButton onClose={} size="lg" radius="md">
-        <Textarea value={texto} label="Mensagens:" size="md" minRows={6} maxRows={6}/>
-      </Dialog>      
+        <Affix position={{ bottom: rem(20), right: rem(20) }} style={{width: '95%'}}>
+          <Collapse in={logVisible} transitionDuration={1000}>
+              <Textarea value={texto} label="Mensagens:" size="md" minRows={6} maxRows={6}/>
+          </Collapse>      
+        </Affix>
     </>
   );
 
-});
+};
 
 export default Log;
