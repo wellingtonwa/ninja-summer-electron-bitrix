@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "@mantine/core";
-import InformacaoBitrix from "../model/informacaoBitrix";
+import InformacaoBitrix from "../../../model/informacaoBitrix";
 
 const link = "https://projetusti.bitrix24.com.br/workgroups/group/:groupId/tasks/task/view/:taskId/";
 

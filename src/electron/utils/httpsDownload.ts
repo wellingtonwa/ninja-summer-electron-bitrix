@@ -1,6 +1,4 @@
 import * as https from 'https';
-import fs from 'fs';
-import path from 'path';
 import { saveDownloadedFile } from './ioUtils';
 
 const REGEX_SERVER = /(https:\/\/[a-z._-]*)/g;
@@ -8,14 +6,14 @@ const REGEX_SERVER = /(https:\/\/[a-z._-]*)/g;
 export async function download(url:string, dest:string, hasFileNameOnPath = false): Promise<string> {
   return new Promise((resolve, reject) => {
 
-      const request = https.get(url, async response => {
+      const request = https.get(url, async (response:any) => {
           
           var len = parseInt(response.headers['content-length'], 10);
           var body = "";
           var cur = 0;
           var total = len / 1048576; //1048576 - bytes in  1Megabyte
 
-          response.on("data", function(chunk) {
+          response.on("data", function(chunk:any) {
               body += chunk;
               cur += chunk && chunk.length;
               console.log("Downloading " + (100.0 * cur / len).toFixed(2) + " percent " + (cur / 1048576).toFixed(2) + " mb" + ". Total size: " + total.toFixed(2) + " mb");

@@ -5,7 +5,6 @@ import { ActionIcon, Box, Button, Group, PasswordInput, TextInput, Tooltip } fro
 import { IconSearch } from '@tabler/icons-react'
 import { ScreenState } from "../../model/enumerated/screenState.enum";
 import { notifications } from "@mantine/notifications";
-import { download } from "src/electron/utils/httpsDownload";
 
 const Config: FC = () => {
 
@@ -76,7 +75,7 @@ const Config: FC = () => {
 
   const selecionarPasta = async (field: string, btnLabel: string) => {
     const fieldValue = Object.values(form.values).find(it => it && it[0] === field);
-    console.log(fieldValue && fieldValue[1] || '');
+    console.log(Object.values(form.values), fieldValue, fieldValue && fieldValue[1] || '');
     const result = await ninja.fileManager.openFolderSelection(btnLabel,  fieldValue && fieldValue[1]|| '');
     form.setFieldValue(field, result);
   }

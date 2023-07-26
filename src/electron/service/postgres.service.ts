@@ -1,4 +1,4 @@
-import { Client, Query } from 'pg';
+import { Client, ClientConfig, Query } from 'pg';
 import configController from '../controllers/config.controller';
 import { exec } from 'child_process';
 import dockerService from './docker.service';
@@ -14,21 +14,27 @@ export interface ConnectionConfigProps {
 class PostgresService {
   
   private connection: Client;
+  private connected: boolean;
 
   constructor() {
     this.connection = new Client(this.getConfig());
-    this.connection.connect();
+    this.connected = true;
+    this.connection.connect((error) => {
+      if (error) {
+        this.connected = false;
+      }
+    });
   }
 
-  getConfig(): ConnectionConfigProps {
+  getConfig(): ClientConfig {
     let configuracao = configController.getConfiguracao();
-    let result = null;
+    let result: ClientConfig = null;
     if (configuracao) {
       result = {
         user: configuracao.dbUser,
         password: configuracao.dbPassword,
         host: configuracao.dbHostname,
-        port: configuracao.dbPort,
+        port: Number(configuracao.dbPort),
         database: configuracao.dbDefaultDatabase,
       }
     }
@@ -37,11 +43,16 @@ class PostgresService {
 
   async reconnect() {
     this.connection = new Client(this.getConfig());
-    await this.connection.connect();
+    await this.connection.connect((error) => {
+      this.connected = true;
+      if (error) {
+        this.connected = false;
+      }
+    });
   }
 
-  hasConnection(): Promise<boolean> {
-    return  this.connection && this.connection._connected;
+  hasConnection(): boolean {
+    return this.connected;
   }
 
   getConnection(): Client {

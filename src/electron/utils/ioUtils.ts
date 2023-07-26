@@ -21,7 +21,7 @@ export const getFileContent = (params: any): Promise<string> => {
   return new Promise((resolve, reject) => {
     fs.readFile(mergedParams.filePath, mergedParams.charset, (error, data) => {
       if(error) reject(Error(error.message));
-      resolve(data);
+      resolve(data.toString());
     });
   })  
 }

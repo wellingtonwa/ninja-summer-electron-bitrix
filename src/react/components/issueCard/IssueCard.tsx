@@ -31,7 +31,7 @@ const IssueCard = (props: IssueCardProps) => {
           <ActionIcon component={IconClipboard} onClick={() => clipboard.copy(database.dbname)}/>
         </Group>
 
-        <Group direction="row" position="apart" sx={(theme: any) => ({
+        <Group position="apart" sx={(theme: any) => ({
           marginTop: 10,
         })}>
           {informacaoMantis && <DadosCaso dadosCaso={informacaoMantis}/>}
