@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from "react";
-import { Affix, Collapse, Dialog, Textarea, rem } from "@mantine/core";
+import { Affix, Box, Collapse, Dialog, Textarea, rem } from "@mantine/core";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store";
 import { GlobalState, globalActions } from "../store/slice/global.slice";
@@ -38,7 +38,9 @@ const Log:FC = () => {
     <>
         <Affix position={{ bottom: rem(20), right: rem(20) }} style={{width: '95%'}}>
           <Collapse in={logVisible} transitionDuration={1000}>
-              <Textarea value={texto} label="Mensagens:" size="md" minRows={6} maxRows={6}/>
+            <Box sx={(theme)=>({ backgroundColor: theme.colors.dark[4]})} p="xs">
+              <Textarea value={texto} label="Mensagens:" size="md" minRows={6} maxRows={6} />
+            </Box>
           </Collapse>      
         </Affix>
     </>

@@ -17,7 +17,7 @@ const RouteHandler: FC = () => {
 
     return (
       <>
-        <Paper mx="auto" mt={'xl'}>
+        <Paper m={'xl'}>
           <Space h={'xl'}/>
           <Outlet/>
         </Paper>

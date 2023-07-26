@@ -25,7 +25,7 @@ const IssueCard = (props: IssueCardProps) => {
   });
 
   return (
-      <Paper shadow="xl" p="md" sx={paperStyle(null, informacaoMantis?.etapa?.COLOR || 'EBF5FB')} >
+      <Paper shadow="xl" p="md" sx={theme => paperStyle(theme, informacaoMantis?.etapa?.COLOR || '5C5f66')} >
         <Group spacing="xs">
           <Title order={3}>{database.dbname}</Title>
           <ActionIcon component={IconClipboard} onClick={() => clipboard.copy(database.dbname)}/>

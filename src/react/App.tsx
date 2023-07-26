@@ -46,7 +46,7 @@ const App: FC = () => {
 
     return (
       <Provider store={store}>
-        <MantineProvider>
+        <MantineProvider withCSSVariables withGlobalStyles theme={{ colorScheme: 'dark' }}>
           <Notifications/>
           <Header openMenu={open}/>
           <Menu state={opened} closeFunction={close} />

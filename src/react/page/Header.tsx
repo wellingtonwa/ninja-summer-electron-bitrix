@@ -20,7 +20,7 @@ const Header: FC<HeaderProps> = (props) => {
           <IconMenu2/>
         </ActionIcon>
       </Grid.Col>
-      <Grid.Col span={9}>
+      <Grid.Col span={8}>
         <Center>
           <Title order={1}>Ninja Summer Electron Bitrix</Title>
         </Center>
