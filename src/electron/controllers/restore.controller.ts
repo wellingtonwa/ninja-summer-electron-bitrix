@@ -30,7 +30,6 @@ class RestoreController {
       windowService.appendLog(`Copiando de ${filePath} to ${config.dbBackupFolder}`);
       renameSync(filePath, config.dbBackupFolder + '/database.backup');
     } catch (error) {
-      console.log(error);
       windowService.appendLog(`Ocorreu um erro inesperado: ${error}`);
     }
 
@@ -39,7 +38,7 @@ class RestoreController {
       console.log(`Dropando o banco: ${values.nomeBanco}`)
       await dockerService.droparDockerDatabaseTerminal(values.nomeBanco);
     } catch(ignore) {
-      windowService.appendLog(`O banco de dados ${values.nomeBanco} não existe ou está em uso.`);
+      windowService.appendLog(`O banco de dados ${values.nomeBanco} não existe ou está em uso. Detalhes: ${ignore}`);
     }
 
     try {
@@ -55,13 +54,13 @@ class RestoreController {
       console.log(`Restaurando a base de dados: ${values.nomeBanco}`)
       await dockerService.restoreFileDockerTerminal({filePath:"", nomeBanco: values.nomeBanco, user: config.dbUser});
     } catch(error) {
+      postgresService.reconnect();
       windowService.appendLog(`Houve um erro ao restaurar o banco: ${error}`);
     }
 
     try {
       windowService.appendLog(`Baixando o script obrigatório`);
       const scriptObrigatorioPath = await restoreService.httpsDownload({url: URL_SCRIPT_OBRIGATORIO, dest: config.downloadPath});
-      console.log(scriptObrigatorioPath);
       const conteudoScript: string = await getFileContent({filePath: scriptObrigatorioPath});
       await postgresService.query(conteudoScript);
     } catch(error) {

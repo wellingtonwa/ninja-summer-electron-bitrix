@@ -1,4 +1,4 @@
-import { ActionIcon, Center, Grid, Title } from '@mantine/core';
+import { ActionIcon, Center, Grid, Title, Tooltip } from '@mantine/core';
 import { IconArticle, IconArticleOff, IconMenu2 } from '@tabler/icons-react';
 import React, { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,10 +26,11 @@ const Header: FC<HeaderProps> = (props) => {
         </Center>
       </Grid.Col>
       <Grid.Col span={2}>
+      <Tooltip label={logVisible ? 'Esconder Log' : 'Mostrar Log'}>
         <ActionIcon onClick={() => dispatch(globalActions.logToggle(''))}>
-          {!logVisible && <IconArticle/>}
-          {logVisible && <IconArticleOff/>}
+          {logVisible ? <IconArticleOff/> : <IconArticle/>}
         </ActionIcon>
+      </Tooltip>
       </Grid.Col>
     </Grid>
   </>

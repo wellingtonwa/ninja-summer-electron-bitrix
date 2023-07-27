@@ -5,6 +5,7 @@ import { ActionIcon, Box, Button, Group, PasswordInput, TextInput, Tooltip } fro
 import { IconSearch } from '@tabler/icons-react'
 import { ScreenState } from "../../model/enumerated/screenState.enum";
 import { notifications } from "@mantine/notifications";
+import { requiredField } from "../../electron/utils/validation.util";
 
 const Config: FC = () => {
 
@@ -12,22 +13,11 @@ const Config: FC = () => {
     setFormValuesFromConfig();
   }, [])
 
-  const required = (value: string) => {
-    return '' === value || null === value ? 'O campo não pode estar vazio' : null
-  }
-
   const setFormValuesFromConfig = async () => {
     const config = await ninja.config.getConfiguracao();
     if (config){
-      form.setFieldValue('dbUser', config.dbUser || null);
-      form.setFieldValue('dbHostname', config.dbHostname || null);
-      form.setFieldValue('dbPassword', config.dbPassword || null);
-      form.setFieldValue('dbBackupFolder', config.dbBackupFolder || null);
-      form.setFieldValue('downloadPath', config.downloadPath || null);
-      form.setFieldValue('issueFolder', config.issueFolder || null);
-      form.setFieldValue('dbDefaultDatabase', config.dbDefaultDatabase || null);
-      form.setFieldValue('dbPrefix', config.dbPrefix || null);
-      form.setFieldValue('dbPort', config.dbPort || null);
+      const configEntries = Object.entries(config);
+      configEntries.forEach(entry => form.setFieldValue(entry[0], entry[1] || null));
     }
   }
 
@@ -43,17 +33,18 @@ const Config: FC = () => {
       dbPort: '5432',
       downloadPath: null,
       issueFolder: null,
+      bitrixApiURL: null,
     },
     validate: {
-      dbUser: required,
-      dbPassword: required,
-      dbHostname: required,
-      dbBackupFolder: required,
-      dbDefaultDatabase: required,
-      dbPort: required,
-      dbPrefix: required,
-      downloadPath: required,
-      issueFolder: required,
+      dbUser: requiredField,
+      dbPassword: requiredField,
+      dbHostname: requiredField,
+      dbBackupFolder: requiredField,
+      dbDefaultDatabase: requiredField,
+      dbPort: requiredField,
+      dbPrefix: requiredField,
+      downloadPath: requiredField,
+      issueFolder: requiredField,
     }
   });
 
@@ -61,6 +52,7 @@ const Config: FC = () => {
     ninja.config.setConfiguracao(values);
     try {
       await ninja.postgres.reconnect();
+      await ninja.bitrix.checkConfig();
       if (ninja.postgres.hasConnection()) {
         ninja.main.setScreenState(ScreenState.HOME);
       }
@@ -74,10 +66,11 @@ const Config: FC = () => {
   }
 
   const selecionarPasta = async (field: string, btnLabel: string) => {
-    const fieldValue = Object.values(form.values).find(it => it && it[0] === field);
-    console.log(Object.values(form.values), fieldValue, fieldValue && fieldValue[1] || '');
+    const fieldValue = Object.entries(form.values).find(it => it && it[0] === field);
     const result = await ninja.fileManager.openFolderSelection(btnLabel,  fieldValue && fieldValue[1]|| '');
-    form.setFieldValue(field, result);
+    if (result) {
+      form.setFieldValue(field, result);
+    }
   }
 
 
@@ -91,6 +84,7 @@ const Config: FC = () => {
           <TextInput withAsterisk label="DB - Port" {...form.getInputProps('dbPort')}/>
           <TextInput withAsterisk label="DB - database" {...form.getInputProps('dbDefaultDatabase')}/>
           <TextInput withAsterisk label="Prefixo do nome do banco" {...form.getInputProps('dbPrefix')}/>
+          <TextInput label="URL de integração com Bitrix" {...form.getInputProps('bitrixApiURL')}/>
           <Tooltip label={form.values.dbBackupFolder || ''} disabled={!form.values.dbBackupFolder}>
             <Group mt="md" position="left">
                 <TextInput disabled value={form.values.dbBackupFolder} label="Pasta de backup do container do postgres"/>

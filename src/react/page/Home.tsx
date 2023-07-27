@@ -7,11 +7,15 @@ import IssueCard from "../components/issueCard/IssueCard";
 import Database from "../../model/Database";
 import { LogRefProps } from "./Log";
 import { REGEX_NUMEROCASO } from "../../constants";
+import { isNull } from "lodash";
+import InformacaoBitrix from "../../model/informacaoBitrix";
+import mainService from "src/electron/service/main.service";
 
 const Home: FC = () => {
 
     const [ loading, setLoading ] = useState<boolean>(false)
     const [ databases, setDatabases ] = useState<Database[]>([])
+    const [ dadosBitrix, setDadosBitrix ] = useState<InformacaoBitrix[]>([]);
     const dispatch = useDispatch();
     const elementRef = useRef<LogRefProps>();
 
@@ -21,6 +25,25 @@ const Home: FC = () => {
       findDbNames();
       setLoading(false);
     }, []);
+
+    useEffect(() => {
+      findDadosBitrix();      
+    }, [databases])
+
+    const findDadosBitrix = async () => {
+      if (await ninja.bitrix.isActive()) {
+        const numerosTarefas = databases.map(it => getNumeroCaso(it)).filter(it => !isNull(it));
+        ninja.bitrix.getDadosTarefa(numerosTarefas).then((result: InformacaoBitrix[]) => {
+          setDadosBitrix(result);
+        });
+      } else if (databases.length > 0) {
+        notifications.show({
+          title: 'Informação',
+          color: 'blue',
+          message: 'A url de integração com o Bitrix não foi definida. Para definir acesse as configurações.'
+        });
+      }
+    }
 
     const hasConnection = async () => {
       if (!await ninja.postgres.hasConnection()) {
@@ -39,7 +62,11 @@ const Home: FC = () => {
 
     const dropDatabaseAction = async (databaseName: Database) => {
       ninja.main.appendLog(`Dropando base de dados: ${databaseName.dbname}`);
-      await ninja.postgres.dropDatabase(databaseName.dbname);
+      try {
+        await ninja.postgres.dropDatabase(databaseName.dbname);
+      } catch (error) {
+        ninja.main.appendLog(`Erro ao apagar o banco de dados: ${databaseName.dbname}. Detalhes: ${error}`);
+      }
       await findDbNames();
     }
 
@@ -59,10 +86,24 @@ const Home: FC = () => {
       }
     }
 
+    const titleClick = (url: string) => {
+      ninja.main.openLink(url);
+    }
+
     return (
         <>
           <Grid>
-            {databases.map(it => <Grid.Col sm={12} md={6} xl={4} children={<IssueCard database={it} dropDatabaseAction={dropDatabaseAction} openFolderAction={openFolder}/>}/>)}
+            {databases.map(it => 
+              <Grid.Col sm={12} md={6} xl={4} children={
+                <IssueCard 
+                  database={it} 
+                  dropDatabaseAction={dropDatabaseAction} 
+                  openFolderAction={openFolder}
+                  informacaoBitrix={dadosBitrix.find(ib => ib.id === getNumeroCaso(it))}
+                  issueTitleClick={titleClick}
+                  />
+              }/>
+            )}
           </Grid>
         </>
     )

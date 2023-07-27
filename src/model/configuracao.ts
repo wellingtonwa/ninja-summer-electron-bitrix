@@ -10,4 +10,5 @@ export interface Configuracao {
   downloadPath: string;
   issueFolder?: string;
   configVersion?: string;
+  bitrixApiURL?: string;
 }

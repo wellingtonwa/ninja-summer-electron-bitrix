@@ -34,16 +34,7 @@ class WindowService {
         defaultPath,
         title,
       });
-  } 
-
-  async openSaveFileDialog(title: string, buttonLabel: string, defaultPath: string){
-    return dialog.showSaveDialog(this.mainWindow, {
-        properties: ['showOverwriteConfirmation', 'createDirectory'],
-        buttonLabel,
-        title,
-        defaultPath,
-      });
-  } 
+  }
 
   private exists() {
     return this.mainWindow && !this.mainWindow.isDestroyed();

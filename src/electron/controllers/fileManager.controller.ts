@@ -11,14 +11,9 @@ const LINUX = 'linux';
 
 class FileManagerController {
 
-    async openFolderSelection(buttonLabel: string){
-        const result = await windowService.openFolderSelection('Selecionar Pasta', buttonLabel);
+    async openFolderSelection(buttonLabel: string, fileName: string = ''){
+        const result = await windowService.openFolderSelection('Selecionar Pasta', buttonLabel, fileName);
         return result.canceled ? null : result.filePaths[0];
-    }
-
-    async openSaveFileDialog(buttonLabel: string, fileName: string = '') {
-        const result = await windowService.openSaveFileDialog('Selecione o local para salvar a imagem', 'Salvar', fileName);
-        return result.canceled ? null : result.filePath;
     }
     
     async openFolder (numeroTarefa: string) {

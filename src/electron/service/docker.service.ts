@@ -35,6 +35,7 @@ class DockerService {
         `docker exec -t postgres sh -c "pg_restore -U ${params.user} -v --dbname ${params.nomeBanco} /opt/bkp/database.backup"`,
         {maxBuffer: 1024 * 50000}, (error, stdout, stderr) => {
           if(error) {
+            console.log(error);
             reject(error);
             return;
           }
@@ -51,7 +52,7 @@ class DockerService {
     return new Promise((resolve, reject) => {
       exec(`docker exec -t postgres psql -U postgres -c "DROP DATABASE ${nomeBanco}"`, (error, stdout, stderr) => {
         if(error)
-          reject(error);
+          reject(stdout);
         resolve(stdout);
       })
     })

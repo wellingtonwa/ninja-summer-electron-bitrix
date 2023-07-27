@@ -18,6 +18,10 @@ class ConfigController {
     storeService.set(StoreKey.CONFIG, value);
   }
 
+  async checkConfiguracao() {
+    
+  }
+
 }
 
 export default new ConfigController();

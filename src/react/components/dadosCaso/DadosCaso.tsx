@@ -1,11 +1,13 @@
 import React from "react";
-import { Text } from "@mantine/core";
+import { ActionIcon, Group, NavLink, Text, Tooltip } from "@mantine/core";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
+import { IconExternalLink } from "@tabler/icons-react";
 
 const link = "https://projetusti.bitrix24.com.br/workgroups/group/:groupId/tasks/task/view/:taskId/";
 
 interface DadosCasoProps {
   dadosCaso: InformacaoBitrix;
+  titleClick?: (url: string) => void;
 }
 
 
@@ -14,14 +16,17 @@ const DadosCaso = (props: DadosCasoProps) => {
   const { dadosCaso } = props;
 
   return <Text>
-            <a
-                href={`${link.replace(':groupId', dadosCaso.group?.id ||'').replace(':taskId', dadosCaso.id||'')}`}
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Link para o caso"
-            >
-              <b>Tarefa {dadosCaso.id}:</b> {dadosCaso.titulo}<br/>
-            </a>
+            <Group noWrap>
+              <Text>
+                <b>Tarefa {dadosCaso.id}:</b> {dadosCaso.titulo}
+              </Text>
+              <Tooltip label={'Abrir caso no Bitrix'}>
+                <ActionIcon 
+                  onClick={() => props.titleClick(`${link.replace(':groupId', dadosCaso.group?.id ||'').replace(':taskId', dadosCaso.id||'')}`)}>
+                  <IconExternalLink/>
+                </ActionIcon>
+              </Tooltip>
+            </Group>
             <b>Categoria:</b> NOT IMPLEMENTED<br/>
             <b>Estado:</b> {dadosCaso?.etapa?.TITLE}<br/>
             <b>Aberto em:</b> {dadosCaso.createdDate}<br/>

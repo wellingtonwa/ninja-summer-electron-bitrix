@@ -1,4 +1,4 @@
-import { app, ipcMain } from "electron";
+import { app, ipcMain, shell } from "electron";
 import eventService from "./event.service";
 import windowService from "./window.service";
 import { ScreenState } from "../../model/enumerated/screenState.enum";
@@ -39,6 +39,10 @@ class MainService {
       ipcMain.on('isPackaged', e => {
         e.returnValue = app.isPackaged;
       });
+
+      ipcMain.on('open-external-browser', (event, arg) => {
+        console.log(arg);
+      });
     }
 
     this.globalActionsRegistered = true;
@@ -47,6 +51,10 @@ class MainService {
   setScreenState(newState: ScreenState) {
     this.screenState = newState;
     windowService.emitEvent(EVENT_SCREEN_STATE_CHANGE, this.screenState);
+  }
+
+  openLink(url: string) {
+    shell.openExternal(url);
   }
 
 }

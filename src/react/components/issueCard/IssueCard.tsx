@@ -9,15 +9,16 @@ import InformacaoBitrix from "../../../model/informacaoBitrix";
 
 interface IssueCardProps {
   database: Database;
-  informacaoMantis?: InformacaoBitrix;
+  informacaoBitrix?: InformacaoBitrix;
   openFolderAction: (database: Database) => void;
   dropDatabaseAction: (database: Database) => void;
+  issueTitleClick?: (url: string) => void;
   children?: ReactNode;
 }
 
 const IssueCard = (props: IssueCardProps) => {
 
-  const {database, informacaoMantis, openFolderAction, dropDatabaseAction} = props;
+  const {database, informacaoBitrix, openFolderAction, dropDatabaseAction} = props;
   const clipboard = useClipboard({timeout: 500});
 
   const paperStyle = (theme: any, estado: string | undefined) => ({
@@ -25,7 +26,7 @@ const IssueCard = (props: IssueCardProps) => {
   });
 
   return (
-      <Paper shadow="xl" p="md" sx={theme => paperStyle(theme, informacaoMantis?.etapa?.COLOR || '5C5f66')} >
+      <Paper shadow="xl" p="md" sx={theme => paperStyle(theme, informacaoBitrix?.etapa?.COLOR || '5C5f66')} >
         <Group spacing="xs">
           <Title order={3}>{database.dbname}</Title>
           <ActionIcon component={IconClipboard} onClick={() => clipboard.copy(database.dbname)}/>
@@ -34,7 +35,7 @@ const IssueCard = (props: IssueCardProps) => {
         <Group position="apart" sx={(theme: any) => ({
           marginTop: 10,
         })}>
-          {informacaoMantis && <DadosCaso dadosCaso={informacaoMantis}/>}
+          {informacaoBitrix && <DadosCaso dadosCaso={informacaoBitrix} titleClick={props.issueTitleClick}/>}
           {props.children}
           <Button color="red" onClick={() => dropDatabaseAction(database)}>Apagar</Button>
           <Button onClick={() => openFolderAction(database)}>Abrir Pasta</Button>

@@ -16,6 +16,10 @@ class MainController {
     windowService.appendLog(mensagem);
   }
 
+  openLink(url: string) {
+    mainService.openLink(url);
+  }
+
 }
 
 export default new MainController();
