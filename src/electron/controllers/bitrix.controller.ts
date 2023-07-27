@@ -31,18 +31,20 @@ class BitrixController {
     let result: InformacaoBitrix[] = [];
     for (const item of dadosTarefas) {
       const task = item.task;
-      result.push({
-        'id': task.id,
-        'etapa': dadosKanban[task.stageId],
-        'titulo': task.title,
-        'descricao': task.description,
-        'prioridade': task.priority,
-        'createdDate': task.createdDate,
-        'creator': task.creator,
-        'responsible': task.responsible,
-        'auditorsData': task.auditorsData,
-        'group': task.group
-      });
+      if (task) {
+        result.push({
+          'id': task.id,
+          'etapa': dadosKanban[task.stageId],
+          'titulo': task.title,
+          'descricao': task.description,
+          'prioridade': task.priority,
+          'createdDate': task.createdDate,
+          'creator': task.creator,
+          'responsible': task.responsible,
+          'auditorsData': task.auditorsData,
+          'group': task.group
+        });
+      }
     }
     return result;
   }
@@ -50,6 +52,7 @@ class BitrixController {
   async checkConfig() {
     const config = await configController.getConfiguracao();
     this.active = !isEmpty(config?.bitrixApiURL) && !isNull(config?.bitrixApiURL)
+    bitrixApi.reloadConfig();
   }
   
 

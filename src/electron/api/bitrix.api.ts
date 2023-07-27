@@ -9,7 +9,7 @@ class BitrixApi {
 
   constructor() {
     const config:Configuracao = configController.getConfiguracao()
-    this.service = create(config.bitrixApiURL, "/");
+    this.service = create(config?.bitrixApiURL, "/");
   }
 
   async getDadosBitrix(method: any, params: FiltroBitrix[]) {
@@ -24,7 +24,7 @@ class BitrixApi {
 
   reloadConfig() {
     const config:Configuracao = configController.getConfiguracao()
-    this.service = create(config.bitrixApiURL, "/");
+    this.service = create(config?.bitrixApiURL, "/");
   }
 
 }

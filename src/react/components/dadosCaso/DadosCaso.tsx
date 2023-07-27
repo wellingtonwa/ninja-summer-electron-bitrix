@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionIcon, Group, NavLink, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, Image, NavLink, Text, Tooltip } from "@mantine/core";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
 import { IconExternalLink } from "@tabler/icons-react";
 
@@ -32,8 +32,28 @@ const DadosCaso = (props: DadosCasoProps) => {
             <b>Aberto em:</b> {dadosCaso.createdDate}<br/>
             <b>Cliente:</b> NOT IMPLEMENTED<br/>
             <b>prioridade:</b> {dadosCaso.prioridade}<br/>
-            <b>Criador:</b> <img src={dadosCaso.creator?.icon} title={dadosCaso.creator?.name} alt="Imagem do criador no caso"/><br/>
-            <b>Responsável:</b> <img src={dadosCaso.responsible?.icon} title={dadosCaso.responsible?.name} alt="Imagem do responsavel pelo caso"/>
+            <Group>
+              <Text>
+                Criador:
+              </Text> 
+              <Image 
+                maw={50}
+                src={dadosCaso.creator?.icon} 
+                title={dadosCaso.creator?.name} 
+                alt="Imagem do criador no caso"
+                radius="md"
+              />
+            </Group>
+            <Group>
+              <Text>Responsável:</Text> 
+              <Image
+                maw={50}
+                src={dadosCaso.responsible?.icon} 
+                title={dadosCaso.responsible?.name} 
+                alt="Imagem do responsavel pelo caso"
+                radius="md"
+              />
+            </Group>
           </Text>
 }
 

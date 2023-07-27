@@ -9,7 +9,6 @@ import { LogRefProps } from "./Log";
 import { REGEX_NUMEROCASO } from "../../constants";
 import { isNull } from "lodash";
 import InformacaoBitrix from "../../model/informacaoBitrix";
-import mainService from "src/electron/service/main.service";
 
 const Home: FC = () => {
 
@@ -99,7 +98,7 @@ const Home: FC = () => {
                   database={it} 
                   dropDatabaseAction={dropDatabaseAction} 
                   openFolderAction={openFolder}
-                  informacaoBitrix={dadosBitrix.find(ib => ib.id === getNumeroCaso(it))}
+                  informacaoBitrix={dadosBitrix.find(ib => ib?.id === getNumeroCaso(it))}
                   issueTitleClick={titleClick}
                   />
               }/>
