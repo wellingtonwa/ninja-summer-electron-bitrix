@@ -1,10 +1,11 @@
-import { Button, Space, Tabs, TextInput } from "@mantine/core";
+import { ActionIcon, Button, FileInput, Group, Space, Tabs, TextInput, Tooltip } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconDownload } from "@tabler/icons-react";
+import { IconDownload, IconSearch } from "@tabler/icons-react";
 import React, { FC } from "react";
 import { RestoreLink } from "../../model/restoreLink";
 import { useDispatch } from "react-redux";
 import { globalActions } from "../store/slice/global.slice";
+import { RestoreArquivo } from "src/model/restoreArquivo";
 
 const Restore: FC = () => {
 
@@ -12,7 +13,7 @@ const Restore: FC = () => {
 
   const form = useForm<RestoreLink>({
     initialValues: {
-        'nomeBanco': undefined,
+        nomeBanco: undefined,
         link: undefined
     },
     validate: (values) => ({
@@ -23,39 +24,71 @@ const Restore: FC = () => {
 
   const formArquivo = useForm({
     initialValues: {
-        'nomeBanco': undefined,
+        nomeBanco: undefined,
         arquivo: undefined as any,
-        'informarNome': true
     },
     validate: (values) => ({
-        'nomeBanco': !!!values['nomeBanco'] && values['informarNome'] ? "Informe o nome do banco" : null,
+        nomeBanco: !!!values['nomeBanco'] ? "Informe o nome do banco" : null,
         arquivo: !!!values.arquivo ? "O arquivo" : null,
     })
-});
+  });
 
-const handleSubmit = (values: RestoreLink) => {
-  ninja.restore.restoreLink(values);
-  dispatch(globalActions.setLogVisible(true));
-}
+  const selecionarPasta = async (field: string, btnLabel: string) => {
+    const fieldValue = Object.entries(form.values).find(it => it && it[0] === field);
+    const result = await ninja.fileManager.openFileSelection(btnLabel,  fieldValue && fieldValue[1]|| '');
+    if (result) {
+      formArquivo.setFieldValue(field, result);
+    }
+  }
+
+  const handleSubmit = (values: RestoreLink) => {
+    ninja.restore.restoreDatabase(values);
+    dispatch(globalActions.setLogVisible(true));
+  }
+
+  const handleSubmitArquivo = (values: RestoreArquivo) => {
+    ninja.restore.restoreDatabase(values);
+    dispatch(globalActions.setLogVisible(true));
+  }
 
   return (
     <>
      <Tabs defaultValue="via-link">
       <Tabs.List>
         <Tabs.Tab value="via-link" icon={<IconDownload/>}>Via Link</Tabs.Tab>
+        <Tabs.Tab value="via-arquivo" icon={<IconDownload/>}>Via Arquivo</Tabs.Tab>
       </Tabs.List>
       <Tabs.Panel value="via-link" pt="xs">
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-                            <TextInput size="md" placeholder="Nome do banco"
-                                       {...form.getInputProps('nomeBanco')}/>
-                            <Space h="lg"/>
-                            <TextInput size="md" placeholder="Link para o backup"
-                                       {...form.getInputProps('link')}/>
-                            <Space h="lg"/>
-                            <Button size="lg" type="submit">
-                                Salvar
-                            </Button>
-                        </form>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <TextInput size="md" placeholder="Nome do banco"
+                      {...form.getInputProps('nomeBanco')}/>
+          <Space h="lg"/>
+          <TextInput size="md" placeholder="Link para o backup"
+                      {...form.getInputProps('link')}/>
+          <Space h="lg"/>
+          <Button size="lg" type="submit">
+              Salvar
+          </Button>
+        </form>
+      </Tabs.Panel>
+      <Tabs.Panel value="via-arquivo" pt="xs">
+        <form onSubmit={formArquivo.onSubmit(handleSubmitArquivo)}>
+          <TextInput size="md" placeholder="Nome do banco"
+                      {...formArquivo.getInputProps('nomeBanco')}/>
+          <Space h="md"/>
+          <Tooltip label={formArquivo.values.arquivo || ''} disabled={!formArquivo.values.arquivo}>
+            <Group mt="md" position="left">
+                <TextInput disabled value={formArquivo.values.arquivo} label="Arquivo do backup (*.zip ou *.backup)"/>
+                <ActionIcon variant="default" mt="xl" size="lg" onClick={() => selecionarPasta('arquivo', 'Selecione o arquivo de backup')}>
+                  <IconSearch color="blue"/>
+                </ActionIcon>
+            </Group>
+          </Tooltip>
+          <Space h="lg"/>
+          <Button size="lg" type="submit">
+              Salvar
+          </Button>
+        </form>
       </Tabs.Panel>
      </Tabs>
     </>

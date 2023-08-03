@@ -15,6 +15,11 @@ class FileManagerController {
         const result = await windowService.openFolderSelection('Selecionar Pasta', buttonLabel, fileName);
         return result.canceled ? null : result.filePaths[0];
     }
+
+    async openFileSelection(buttonLabel: string, fileName: string = ''){
+        const result = await windowService.openFileSelection('Selecionar Arquivo', buttonLabel, fileName);
+        return result.canceled ? null : result.filePaths[0];
+    }
     
     async openFolder (numeroTarefa: string) {
         let config = configController.getConfiguracao();
@@ -28,7 +33,6 @@ class FileManagerController {
         const process = spawn(fileExplorer, [`${dirPath}`], { detached: true, stdio: 'ignore' });
         process.unref();
     };
-
 }
 
 export default new FileManagerController();

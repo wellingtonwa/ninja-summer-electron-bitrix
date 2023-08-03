@@ -36,6 +36,15 @@ class WindowService {
       });
   }
 
+  async openFileSelection(title: string, buttonLabel: string, defaultPath: string = ''){
+    return dialog.showOpenDialog(this.mainWindow, {
+        properties: ['openFile', 'createDirectory', 'promptToCreate', 'dontAddToRecent'],
+        buttonLabel,
+        defaultPath,
+        title,
+      });
+  }
+
   private exists() {
     return this.mainWindow && !this.mainWindow.isDestroyed();
   }

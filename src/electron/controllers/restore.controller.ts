@@ -10,28 +10,35 @@ import { exec } from 'child_process';
 import dockerService from "../service/docker.service";
 import { rename, renameSync } from "original-fs";
 import postgresService from "../service/postgres.service";
+import { RestoreArquivo } from "../../model/restoreArquivo";
 
 const REGEX_ZIP_FILE = ".*\.zip$";
 
 class RestoreController {
 
-  async restoreLink(values: RestoreLink) {
-    let config: Configuracao = await configController.getConfiguracao();
+  async restoreDatabase(values: RestoreLink | RestoreArquivo) {
+    let { downloadPath, dbBackupFolder, dbUser}: Configuracao = await configController.getConfiguracao();
+
     let filePath;
-    try {
-      windowService.appendLog(`Fazendo download da URL ${values.link}`);
-      filePath = await restoreService.httpsDownload({url: values.link, dest: config.downloadPath});
-      // Verificando se o arquivo é compactado
-      if (filePath.match(REGEX_ZIP_FILE)) {
-        windowService.appendLog(`Descompactando o arquivo: ${filePath} em ${config.downloadPath}`);
-        filePath = await descompactar({filePath, fileDest: config.downloadPath});
+    if ('link' in values) {
+      try {
+        windowService.appendLog(`Fazendo download da URL ${values.link}`);
+        filePath = await restoreService.httpsDownload({url: values.link, dest: downloadPath});
+      } catch (error) {
+        windowService.appendLog(`Ocorreu um erro inesperado: ${error}`);
       }
-      
-      windowService.appendLog(`Copiando de ${filePath} to ${config.dbBackupFolder}`);
-      renameSync(filePath, config.dbBackupFolder + '/database.backup');
-    } catch (error) {
-      windowService.appendLog(`Ocorreu um erro inesperado: ${error}`);
+    } else {
+     filePath = values.arquivo; 
     }
+
+      // Verificando se o arquivo é compactado
+    if (filePath.match(REGEX_ZIP_FILE)) {
+      windowService.appendLog(`Descompactando o arquivo: ${filePath} em ${downloadPath}`);
+      filePath = await descompactar({filePath, fileDest: downloadPath});
+    }
+    
+    windowService.appendLog(`Copiando de ${filePath} to ${dbBackupFolder}`);
+    renameSync(filePath, dbBackupFolder + '/database.backup');
 
     try {
       windowService.appendLog(`Dropando o banco: ${values.nomeBanco}`);
@@ -52,7 +59,7 @@ class RestoreController {
     try {
       windowService.appendLog(`Restaurando a base de dados: ${values.nomeBanco}`);
       console.log(`Restaurando a base de dados: ${values.nomeBanco}`)
-      await dockerService.restoreFileDockerTerminal({filePath:"", nomeBanco: values.nomeBanco, user: config.dbUser});
+      await dockerService.restoreFileDockerTerminal({filePath:"", nomeBanco: values.nomeBanco, user: dbUser});
     } catch(error) {
       postgresService.reconnect();
       windowService.appendLog(`Houve um erro ao restaurar o banco: ${error}`);
@@ -60,7 +67,7 @@ class RestoreController {
 
     try {
       windowService.appendLog(`Baixando o script obrigatório`);
-      const scriptObrigatorioPath = await restoreService.httpsDownload({url: URL_SCRIPT_OBRIGATORIO, dest: config.downloadPath});
+      const scriptObrigatorioPath = await restoreService.httpsDownload({url: URL_SCRIPT_OBRIGATORIO, dest: downloadPath});
       const conteudoScript: string = await getFileContent({filePath: scriptObrigatorioPath});
       await postgresService.query(conteudoScript);
     } catch(error) {
@@ -68,10 +75,7 @@ class RestoreController {
     }
     
     windowService.appendLog(`Processo finalizado!!!`);
-    
-    
   }
-
 }
 
 export default new RestoreController();
