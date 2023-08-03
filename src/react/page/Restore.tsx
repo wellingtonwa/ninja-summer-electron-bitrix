@@ -5,7 +5,7 @@ import React, { FC } from "react";
 import { RestoreLink } from "../../model/restoreLink";
 import { useDispatch } from "react-redux";
 import { globalActions } from "../store/slice/global.slice";
-import { RestoreArquivo } from "src/model/restoreArquivo";
+import { RestoreArquivo } from "../../model/restoreArquivo";
 
 const Restore: FC = () => {
 
