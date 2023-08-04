@@ -14,4 +14,5 @@ export default interface InformacaoBitrix {
     responsible?: UserBitrix;
     auditorsData?: UserBitrix[];
     group?: GrupoBitrix;
+    codigoCliente?: string;
 }

@@ -6,7 +6,7 @@ export const BITRIX_METHODS = {
   getTask: {method: 'tasks.task.get', requiredParams: ['taskId']},
   getStage: {method: 'task.stages.get', requiredParams: ['entityId']}
 };
-export const BITRIS_FIELDS = [
+export const BITRIX_FIELDS = [
   'ID',
   'PARENT_ID',
   'TITLE',
@@ -55,3 +55,14 @@ export const BITRIS_FIELDS = [
   'DURATION_FACT',
   'DURATION_TYPE'
   ];
+
+export const FIELDS_USED_IN_BITRIX_API = [
+  'UF_AUTO_675766807491', // Campo de código do cliente;
+  'DESCRIPTION',
+  'TITLE',
+  'PRIORITY',
+  'ID',
+  'STADE_ID',
+  'CREATE_DATE',
+  'CREATOR_ID'
+]

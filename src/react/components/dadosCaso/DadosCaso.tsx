@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionIcon, Group, Image, NavLink, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, ColorSwatch, Group, Image, NavLink, Text, Tooltip } from "@mantine/core";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
 import { IconExternalLink } from "@tabler/icons-react";
 
@@ -27,17 +27,29 @@ const DadosCaso = (props: DadosCasoProps) => {
                 </ActionIcon>
               </Tooltip>
             </Group>
-            <b>Categoria:</b> NOT IMPLEMENTED<br/>
-            <b>Estado:</b> {dadosCaso?.etapa?.TITLE}<br/>
-            <b>Aberto em:</b> {dadosCaso.createdDate}<br/>
-            <b>Cliente:</b> NOT IMPLEMENTED<br/>
+            <Group>
+              <Text>
+                Estado: 
+              </Text>
+              <Text>
+                {dadosCaso?.etapa?.TITLE}
+              </Text>
+            </Group>
+            <Group>
+              <Text>Aberto em:</Text>
+              <Text>{dadosCaso.createdDate}</Text>
+            </Group>
+            <Group>
+              <Text>Cliente:</Text>
+              <Text>{dadosCaso.codigoCliente}</Text>
+            </Group>  
             <b>prioridade:</b> {dadosCaso.prioridade}<br/>
             <Group>
               <Text>
                 Criador:
               </Text> 
               <Image 
-                maw={50}
+                maw={25}
                 src={dadosCaso.creator?.icon} 
                 title={dadosCaso.creator?.name} 
                 alt="Imagem do criador no caso"
@@ -47,7 +59,7 @@ const DadosCaso = (props: DadosCasoProps) => {
             <Group>
               <Text>Responsável:</Text> 
               <Image
-                maw={50}
+                maw={25}
                 src={dadosCaso.responsible?.icon} 
                 title={dadosCaso.responsible?.name} 
                 alt="Imagem do responsavel pelo caso"

@@ -1,6 +1,6 @@
 import React, {ReactNode} from "react";
 import { IconClipboard } from '@tabler/icons-react'
-import {Paper, Button, Title, Group, ActionIcon} from "@mantine/core";
+import {Paper, Button, Title, Group, ActionIcon, Tooltip, ColorSwatch, Card} from "@mantine/core";
 import Database from "../../../model/Database";
 import DadosCaso from "../dadosCaso/DadosCaso";
 import {useClipboard} from "@mantine/hooks";
@@ -26,8 +26,11 @@ const IssueCard = (props: IssueCardProps) => {
   });
 
   return (
-      <Paper shadow="xl" p="md" style={ {backgroundColor: '#5C5f66'}} >
+      <Card shadow="xl" p="md" style={ {backgroundColor: '#5C5f66'}} >
         <Group spacing="xs">
+          {informacaoBitrix ? <Tooltip label={informacaoBitrix?.etapa?.TITLE}>
+          <ColorSwatch color={`#${informacaoBitrix?.etapa?.COLOR}`}/>
+          </Tooltip> : null}
           <Title order={3}>{database.dbname}</Title>
           <ActionIcon component={IconClipboard} onClick={() => clipboard.copy(database.dbname)}/>
         </Group>
@@ -40,7 +43,7 @@ const IssueCard = (props: IssueCardProps) => {
           <Button color="red" onClick={() => dropDatabaseAction(database)}>Apagar</Button>
           <Button onClick={() => openFolderAction(database)}>Abrir Pasta</Button>
         </Group>
-      </Paper>
+      </Card>
   )
 
 }

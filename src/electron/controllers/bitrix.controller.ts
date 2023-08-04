@@ -1,5 +1,5 @@
 import { FiltroBitrix } from "../../model/filtroBitrix";
-import { BITRIX_METHODS } from "../../constants";
+import { BITRIX_METHODS, FIELDS_USED_IN_BITRIX_API } from "../../constants";
 import bitrixApi from "../api/bitrix.api";
 import configController from "./config.controller";
 import { isEmpty, isNull, isString } from "lodash";
@@ -19,18 +19,21 @@ class BitrixController {
     const dadosKanban:any = await bitrixApi.getDadosBitrix(BITRIX_METHODS.getStage.method, [filtroKanban]);
 
     let filtrosTarefa: FiltroBitrix[];
+    const filtroCampoCodigoCliente = {'name': 'select[]', 'value': 'UF_AUTO_675766807491'}
+    const filtroTodosOsCampos = {'name': 'select[]', 'value': '*'}
     if(isString(numeroTarefa)) {
-      filtrosTarefa = [{'name': 'taskId', 'value': numeroTarefa}];
+      filtrosTarefa = [{'name': 'taskId', 'value': numeroTarefa}, filtroCampoCodigoCliente];
     } else {
       filtrosTarefa = numeroTarefa.map(it => ({'name': 'taskId', 'value': it}));
     }
     
-    const promisesDadosTarefas = filtrosTarefa.map(filtroTarefa => (bitrixApi.getDadosBitrix(BITRIX_METHODS.getTask.method, [filtroTarefa])))
+    const promisesDadosTarefas = filtrosTarefa.map(filtroTarefa => (bitrixApi.getDadosBitrix(BITRIX_METHODS.getTask.method, [filtroTarefa, filtroCampoCodigoCliente, filtroTodosOsCampos ])))
     const dadosTarefas: any = await Promise.all(promisesDadosTarefas);
 
     let result: InformacaoBitrix[] = [];
     for (const item of dadosTarefas) {
       const task = item.task;
+      console.log(task);
       if (task) {
         result.push({
           'id': task.id,
@@ -42,7 +45,8 @@ class BitrixController {
           'creator': task.creator,
           'responsible': task.responsible,
           'auditorsData': task.auditorsData,
-          'group': task.group
+          'group': task.group,
+          'codigoCliente': task.ufAuto675766807491,
         });
       }
     }
