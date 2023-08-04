@@ -1,6 +1,6 @@
 import React, {ReactNode} from "react";
 import { IconClipboard } from '@tabler/icons-react'
-import {Paper, Button, Title, Group, ActionIcon, Tooltip, ColorSwatch, Card} from "@mantine/core";
+import {Paper, Button, Title, Group, ActionIcon, Tooltip, ColorSwatch, Card, SimpleGrid} from "@mantine/core";
 import Database from "../../../model/Database";
 import DadosCaso from "../dadosCaso/DadosCaso";
 import {useClipboard} from "@mantine/hooks";
@@ -34,15 +34,18 @@ const IssueCard = (props: IssueCardProps) => {
           <Title order={3}>{database.dbname}</Title>
           <ActionIcon component={IconClipboard} onClick={() => clipboard.copy(database.dbname)}/>
         </Group>
-
-        <Group position="apart" sx={(theme: any) => ({
-          marginTop: 10,
-        })}>
+	<SimpleGrid cols={1}>
+	<div>
           {informacaoBitrix && <DadosCaso dadosCaso={informacaoBitrix} titleClick={props.issueTitleClick}/>}
           {props.children}
+	</div>
+	<Group sx={(theme: any) => ({
+          marginTop: 10,
+        })}>
           <Button color="red" onClick={() => dropDatabaseAction(database)}>Apagar</Button>
           <Button onClick={() => openFolderAction(database)}>Abrir Pasta</Button>
         </Group>
+	</SimpleGrid>
       </Card>
   )
 

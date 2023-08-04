@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionIcon, ColorSwatch, Group, Image, NavLink, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, ColorSwatch, Group, Image, NavLink, SimpleGrid, Text, Tooltip } from "@mantine/core";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
 import { IconExternalLink } from "@tabler/icons-react";
 
@@ -15,7 +15,8 @@ const DadosCaso = (props: DadosCasoProps) => {
 
   const { dadosCaso } = props;
 
-  return <Text>
+  return <SimpleGrid cols={1}>
+  	   <div>
             <Group noWrap>
               <Text>
                 <b>Tarefa {dadosCaso.id}:</b> {dadosCaso.titulo}
@@ -27,6 +28,8 @@ const DadosCaso = (props: DadosCasoProps) => {
                 </ActionIcon>
               </Tooltip>
             </Group>
+           </div>
+	   <div>
             <Group>
               <Text>
                 Estado: 
@@ -35,15 +38,26 @@ const DadosCaso = (props: DadosCasoProps) => {
                 {dadosCaso?.etapa?.TITLE}
               </Text>
             </Group>
+	   </div>
+	   <div>
             <Group>
               <Text>Aberto em:</Text>
               <Text>{dadosCaso.createdDate}</Text>
             </Group>
+	   </div>
+	   <div>
             <Group>
               <Text>Cliente:</Text>
               <Text>{dadosCaso.codigoCliente}</Text>
             </Group>  
-            <b>prioridade:</b> {dadosCaso.prioridade}<br/>
+	   </div>
+	   <div>
+            <Group>  
+	      <Text>Prioridade:</Text>
+	      <Text>{dadosCaso.prioridade}</Text>
+	    </Group>
+	   </div>
+	   <div>
             <Group>
               <Text>
                 Criador:
@@ -56,6 +70,8 @@ const DadosCaso = (props: DadosCasoProps) => {
                 radius="md"
               />
             </Group>
+	   </div>
+	   <div>
             <Group>
               <Text>Responsável:</Text> 
               <Image
@@ -66,7 +82,8 @@ const DadosCaso = (props: DadosCasoProps) => {
                 radius="md"
               />
             </Group>
-          </Text>
+	   </div>
+          </SimpleGrid>
 }
 
 export default DadosCaso;
