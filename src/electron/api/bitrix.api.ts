@@ -13,7 +13,6 @@ class BitrixApi {
   }
 
   async getDadosBitrix(method: any, params: FiltroBitrix[]) {
-    console.log(params);
     return this.service.get(`${method}${getQueryParams(params)}`).then(retorno => {
       let result = null;
       if (retorno.data) {

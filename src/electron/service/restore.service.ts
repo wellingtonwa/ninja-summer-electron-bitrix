@@ -2,6 +2,7 @@ import { RestoreLink } from '../../model/restoreLink';
 import { EVENT_APPEND_LOG } from '../../constants';
 import { download } from '../utils/httpsDownload';
 import windowService from './window.service';
+import downloadService from './download.service';
 
 interface DownloadProps {
   url: string;
@@ -15,8 +16,7 @@ class RestoreService {
 
   async httpsDownload(downloadProps: DownloadProps): Promise<string> {
     const {url, dest, hasFileNameOnPath} = downloadProps;
-    
-    return download(url, dest, hasFileNameOnPath);
+    return await downloadService.download({url, dest, hasFileNameOnPath, logFunction: windowService});
   }
 
   async downloadAndRestore(values: DownloadAndRestoreProps) {

@@ -33,7 +33,6 @@ class BitrixController {
     let result: InformacaoBitrix[] = [];
     for (const item of dadosTarefas) {
       const task = item.task;
-      console.log(task);
       if (task) {
         result.push({
           'id': task.id,

@@ -31,7 +31,7 @@ class RestoreController {
      filePath = values.arquivo; 
     }
 
-      // Verificando se o arquivo é compactado
+    // Verificando se o arquivo é compactado
     if (filePath.match(REGEX_ZIP_FILE)) {
       windowService.appendLog(`Descompactando o arquivo: ${filePath} em ${downloadPath}`);
       filePath = await descompactar({filePath, fileDest: downloadPath});
@@ -42,7 +42,6 @@ class RestoreController {
 
     try {
       windowService.appendLog(`Dropando o banco: ${values.nomeBanco}`);
-      console.log(`Dropando o banco: ${values.nomeBanco}`)
       await dockerService.droparDockerDatabaseTerminal(values.nomeBanco);
     } catch(ignore) {
       windowService.appendLog(`O banco de dados ${values.nomeBanco} não existe ou está em uso. Detalhes: ${ignore}`);
@@ -50,7 +49,6 @@ class RestoreController {
 
     try {
       windowService.appendLog(`Criando banco: ${values.nomeBanco}`);
-      console.log(`Criando banco: ${values.nomeBanco}`)
       await dockerService.criarDockerDatabaseTerminal(values.nomeBanco);
     } catch(ignore) {
       windowService.appendLog(`O banco de dados ${values.nomeBanco} não existe ou está em uso.`);
@@ -58,7 +56,6 @@ class RestoreController {
 
     try {
       windowService.appendLog(`Restaurando a base de dados: ${values.nomeBanco}`);
-      console.log(`Restaurando a base de dados: ${values.nomeBanco}`)
       await dockerService.restoreFileDockerTerminal({filePath:"", nomeBanco: values.nomeBanco, user: dbUser});
     } catch(error) {
       postgresService.reconnect();
