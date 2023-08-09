@@ -23,11 +23,10 @@ class BitrixController {
     const filtroCampoCodigoCliente = {'name': 'select[]', 'value': 'UF_AUTO_675766807491'}
     const filtroTodosOsCampos = {'name': 'select[]', 'value': '*'}
     if(isString(numeroTarefa)) {
-      filtrosTarefa = [{'name': 'taskId', 'value': numeroTarefa}, filtroCampoCodigoCliente];
+      filtrosTarefa = [{'name': 'taskId', 'value': numeroTarefa}];
     } else {
       filtrosTarefa = numeroTarefa.map(it => ({'name': 'taskId', 'value': it}));
     }
-    
     const promisesDadosTarefas = filtrosTarefa.map(filtroTarefa => (bitrixApi.getDadosBitrix(BITRIX_METHODS.getTask.method, [filtroTarefa, filtroCampoCodigoCliente, filtroTodosOsCampos ])))
     const dadosTarefas: any = await Promise.all(promisesDadosTarefas);
 

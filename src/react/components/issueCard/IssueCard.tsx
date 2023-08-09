@@ -1,5 +1,5 @@
 import React, {ReactNode} from "react";
-import { IconClipboard } from '@tabler/icons-react'
+import { IconClipboard, IconRefresh } from '@tabler/icons-react'
 import {Paper, Button, Title, Group, ActionIcon, Tooltip, ColorSwatch, Card, SimpleGrid} from "@mantine/core";
 import Database from "../../../model/Database";
 import DadosCaso from "../dadosCaso/DadosCaso";
@@ -12,13 +12,14 @@ interface IssueCardProps {
   informacaoBitrix?: InformacaoBitrix;
   openFolderAction: (database: Database) => void;
   dropDatabaseAction: (database: Database) => void;
+  issueRefreshClick?: (numeroTarefa: string) => void;
   issueTitleClick?: (url: string) => void;
   children?: ReactNode;
 }
 
 const IssueCard = (props: IssueCardProps) => {
 
-  const {database, informacaoBitrix, openFolderAction, dropDatabaseAction} = props;
+  const {database, informacaoBitrix, openFolderAction, dropDatabaseAction, issueRefreshClick} = props;
   const clipboard = useClipboard({timeout: 500});
 
   const paperStyle = (theme: any, estado: string | undefined) => ({
@@ -28,11 +29,14 @@ const IssueCard = (props: IssueCardProps) => {
   return (
       <Card shadow="xl" p="md" style={ {backgroundColor: '#5C5f66'}} >
         <Group spacing="xs">
-          {informacaoBitrix ? <Tooltip label={informacaoBitrix?.etapa?.TITLE}>
-          <ColorSwatch color={`#${informacaoBitrix?.etapa?.COLOR}`}/>
-          </Tooltip> : null}
+          {database.isTarefa && <Tooltip label={informacaoBitrix?.etapa?.TITLE}>
+              <ColorSwatch color={`#${informacaoBitrix?.etapa?.COLOR}`}/>
+          </Tooltip>}
           <Title order={3}>{database.dbname}</Title>
           <ActionIcon component={IconClipboard} onClick={() => clipboard.copy(database.dbname)}/>
+          {database.isTarefa && <Tooltip label="Atualizar as informações da tarefa">
+          <ActionIcon component={IconRefresh} onClick={() => issueRefreshClick(informacaoBitrix.id)}/>
+          </Tooltip>}
         </Group>
 	<SimpleGrid cols={1}>
 	<div>

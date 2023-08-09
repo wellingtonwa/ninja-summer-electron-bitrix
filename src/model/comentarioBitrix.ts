@@ -1,4 +1,4 @@
-export default insterface ComentarioBitrix {
+export default interface ComentarioBitrix {
    POST_MESSAGE_HTML: string;
    ID: string;
    AUTHOR_ID: string; 
