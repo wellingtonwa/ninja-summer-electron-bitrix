@@ -1,4 +1,5 @@
 import { FiltroBitrix } from "../../model/filtroBitrix";
+import { ComentarioBitrix } from "../../model/comentarioBitrix";
 import { BITRIX_METHODS, FIELDS_USED_IN_BITRIX_API } from "../../constants";
 import bitrixApi from "../api/bitrix.api";
 import configController from "./config.controller";
@@ -50,6 +51,11 @@ class BitrixController {
       }
     }
     return result;
+  }
+
+  async getComentariosTarefa(numeroTarefa: string): Promise<ComentarioBitrix> {
+      const result = await bitrixApi.getDadosBitrix(BITRIX_METHODS.getComments.method, [{name: 'taskId', 'value': numeroTarefa}]);
+      return result;
   }
 
   async checkConfig() {

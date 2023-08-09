@@ -43,6 +43,10 @@ const Home: FC = () => {
         });
       }
     }
+    
+    const findComentarios = async () => {
+        console.log(await ninja.bitrix.getComentariosTarefa('33044'));
+    }
 
     const hasConnection = async () => {
       if (!await ninja.postgres.hasConnection()) {

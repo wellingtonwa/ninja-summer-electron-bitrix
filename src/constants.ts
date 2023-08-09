@@ -4,7 +4,8 @@ export const URL_SCRIPT_OBRIGATORIO = 'https://www.dropbox.com/s/4ub6n18no37o356
 export const REGEX_NUMEROCASO = /(?<=.*)\d{5}$/g;
 export const BITRIX_METHODS = {
   getTask: {method: 'tasks.task.get', requiredParams: ['taskId']},
-  getStage: {method: 'task.stages.get', requiredParams: ['entityId']}
+  getStage: {method: 'task.stages.get', requiredParams: ['entityId']},
+  getComments: {method: 'task.commentitem.getlist', requiredParams: ['taskId']},
 };
 export const BITRIX_FIELDS = [
   'ID',
