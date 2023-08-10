@@ -5,7 +5,7 @@ import bitrixApi from "../api/bitrix.api";
 import configController from "./config.controller";
 import { isEmpty, isNull, isString } from "lodash";
 import InformacaoBitrix from "../../model/informacaoBitrix";
-
+import moment from "moment";
 
 class BitrixController {
 
@@ -40,7 +40,7 @@ class BitrixController {
           'titulo': task.title,
           'descricao': task.description,
           'prioridade': task.priority,
-          'createdDate': task.createdDate,
+          'createdDate': moment(task.createdDate).format('DD/MM/YYYY HH:mm:ss'),
           'creator': task.creator,
           'responsible': task.responsible,
           'auditorsData': task.auditorsData,

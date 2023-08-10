@@ -90,3 +90,6 @@ typings/
 
 # Electron-Forge
 out/
+
+# Compilado do windows
+dist/
