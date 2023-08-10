@@ -3,7 +3,7 @@ import { saveDownloadedFile } from './ioUtils';
 
 const REGEX_SERVER = /(https:\/\/[a-z._-]*)/g;
 
-export async function download(url:string, dest:string, hasFileNameOnPath = false, logFunction: (msg: string) => void): Promise<string> {
+export async function download(url:string, dest:string, hasFileNameOnPath = false): Promise<string> {
   return new Promise((resolve, reject) => {
 
       const request = https.get(url, async (response:any) => {
@@ -12,14 +12,6 @@ export async function download(url:string, dest:string, hasFileNameOnPath = fals
           var body = "";
           var cur = 0;
           var total = len / 1048576; //1048576 - bytes in  1Megabyte
-
-          if (logFunction) {
-            try {
-              logFunction(`Tamanho do arquivo de download: ${total.toFixed(2)}`);
-            } catch (error) {
-                console.log("Erro ao logar o tamanho do download>> " + error);
-            }
-          }
 
           response.on("data", function(chunk:any) {
               body += chunk;

@@ -83,7 +83,7 @@ const Home: FC = () => {
 
     const findDbNames = async () => {
       const result = await ninja.dashboard.getDbnames();
-      setDatabases(result.map(it => ({isTarefa: getNumeroTarefa(it) !== null, ...it})));
+      setDatabases(result.map((it: Database) => ({isTarefa: getNumeroTarefa(it) !== null, ...it})));
     }
 
     const dropDatabaseAction = async (databaseName: Database) => {

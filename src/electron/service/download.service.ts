@@ -2,9 +2,11 @@ import * as https from 'https';
 import { saveDownloadedFile } from '../utils/ioUtils';
 import LogService from '../../model/LogService';
 
+const REGEX_SERVER = /(https:\/\/[a-z._-]*)/g;
+
 class DownloadService {
 
-    async download(params: {url: string, dest: string, hasFileNameOnPath: boolean, logFunction: LogService}) {
+    async download(params: {url: string, dest: string, hasFileNameOnPath: boolean, logFunction: LogService}): Promise<string> {
         const { url, dest, hasFileNameOnPath, logFunction } = params;
         return new Promise((resolve, reject) => {
              

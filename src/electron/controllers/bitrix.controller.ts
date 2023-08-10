@@ -1,5 +1,5 @@
 import { FiltroBitrix } from "../../model/filtroBitrix";
-import { ComentarioBitrix } from "../../model/comentarioBitrix";
+import ComentarioBitrix from "../../model/comentarioBitrix";
 import { BITRIX_METHODS, FIELDS_USED_IN_BITRIX_API } from "../../constants";
 import bitrixApi from "../api/bitrix.api";
 import configController from "./config.controller";
