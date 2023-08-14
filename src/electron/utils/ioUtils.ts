@@ -61,6 +61,7 @@ export const listFiles = async (dirPath: string) => {
   export const saveDownloadedFile = (response:any, dest:string, hasFileNameOnPath = false): Promise<string> => {
     return new Promise((resolve, reject) => {
       var filePath:string;
+      
       if (hasFileNameOnPath) {
           filePath = dest;
       } else {
@@ -69,9 +70,11 @@ export const listFiles = async (dirPath: string) => {
         let fileName = contentDispositionData[0];
         filePath = path.resolve(__dirname, `${dest}/${fileName}`);
       }
+      
       createFolderIfNotExists({ dirPath: path.dirname(filePath)});
       const file = fs.createWriteStream(filePath);
       response.pipe(file);
+      console.log('Antes de logar o erro >>>>>>>>>');
   
       file.on("finish", () => {
         resolve(filePath);
@@ -83,7 +86,8 @@ export const listFiles = async (dirPath: string) => {
         if (err.code === "EXIST") {
           reject("File already exists");
         } else {
-          fs.unlink(dest, () => {}); // Delete temp file
+          !hasFileNameOnPath && fs.unlink(dest, () => {}); // Delete temp file
+          console.log(err);
           reject(Error(err.message));
         }
       });

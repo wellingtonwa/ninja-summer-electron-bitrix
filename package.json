@@ -1,7 +1,7 @@
 {
   "name": "ninja-summer-electron-bitrix",
   "productName": "ninja-summer-electron-bitrix",
-  "version": "1.0.4",
+  "version": "1.0.3",
   "description": "Versão Electron do Ninja integrado com o Bitrix",
   "main": ".webpack/main",
   "scripts": {

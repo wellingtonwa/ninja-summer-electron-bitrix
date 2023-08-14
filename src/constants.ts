@@ -67,3 +67,6 @@ export const FIELDS_USED_IN_BITRIX_API = [
   'CREATE_DATE',
   'CREATOR_ID'
 ]
+
+export const URL_GITHUB_API = "https://api.github.com/repos/wellingtonwa/ninja-summer-electron-bitrix";
+export const ASAR_NAME = 'app.asar';

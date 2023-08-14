@@ -4,15 +4,14 @@ import { createHashRouter, RouterProvider } from 'react-router-dom'
 import RouteHandler from "./components/routerHandler/RouterHandler";
 import Home from "./page/Home";
 import Config from "./page/Config";
+import Update from "./page/Update";
+import Layout from "./components/Layout";
 import { Provider } from "react-redux"
 import store from './store';
 import Splash from "./page/Splash";
 import { Notifications } from "@mantine/notifications";
 import Restore from "./page/Restore";
 import { useDisclosure } from "@mantine/hooks";
-import Menu from "./page/Menu";
-import Log from "./page/Log";
-import Header from "./page/Header";
  
 
 
@@ -21,21 +20,31 @@ const router = createHashRouter([
     path: '/',
     element: <RouteHandler />,
     children: [
+      { 
+        path: '/app',
+        element: <Layout/>,
+        children: [
+          {
+            path: 'home',
+            element: <Home />,
+          },
+          {
+            path: 'config',
+            element: <Config />,
+          },
+          {
+            path: 'restore',
+            element: <Restore />,
+          },
+        ]
+      },
       {
-        path: '/',
+        path: '',
         element: <Splash />,
       },
       {
-        path: '/home',
-        element: <Home />,
-      },
-      {
-        path: '/config',
-        element: <Config />,
-      },
-      {
-        path: '/restore',
-        element: <Restore />,
+        path: '/update',
+        element: <Update />,
       },
     ]
   },
@@ -48,10 +57,7 @@ const App: FC = () => {
       <Provider store={store}>
         <MantineProvider withCSSVariables withGlobalStyles theme={{ colorScheme: 'dark' }}>
           <Notifications/>
-          <Header openMenu={open}/>
-          <Menu state={opened} closeFunction={close} />
           <RouterProvider router={router}/>
-          <Log/>
         </MantineProvider>
       </Provider>
     );

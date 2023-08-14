@@ -4,22 +4,28 @@ import windowService from "./window.service";
 import { ScreenState } from "../../model/enumerated/screenState.enum";
 import { EVENT_SCREEN_STATE_CHANGE } from "../../constants";
 import configController from "../controllers/config.controller";
+import updateService from "../service/update.service";
 
 class MainService {
 
   globalActionsRegistered = false;
   screenState: ScreenState;
+  ignoreUpdate: boolean;
 
   constructor() {
     this.screenState = ScreenState.CONFIG;
+    this.ignoreUpdate = process.argv.includes('--ignore-update');
   }
 
   async init() {
-    
-    if (configController.getConfiguracao()) {
-      this.screenState = ScreenState.HOME;
+    if (!this.ignoreUpdate && await updateService.checkUpdate()) {
+      this.screenState = ScreenState.UPDATE;
     } else {
-      this.screenState = ScreenState.CONFIG;
+      if (configController.getConfiguracao()) {
+        this.screenState = ScreenState.HOME;
+      } else {
+        this.screenState = ScreenState.CONFIG;
+      }
     }
 
     this.initWindow();

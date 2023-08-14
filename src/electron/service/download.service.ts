@@ -20,7 +20,7 @@ class DownloadService {
               console.log("Variavel Total: " + total);
               console.log("logFunction: " + logFunction);
               console.log("Resultado da checagem" + logFunction && total);
-              if (logFunction !== undefined  && total>0) {
+              if (logFunction  && total>0) {
                 try {
                   logFunction.appendLog(`Tamanho do arquivo de download: ${total.toFixed(2)}`);
                 } catch (error) {
