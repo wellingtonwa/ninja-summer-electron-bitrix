@@ -20,6 +20,7 @@ export const ninjaBuild = (file: string, _1 = {}, _2 = {}, _3 = {}, callback: (e
     description: info.description,
     author: info.author,
     main: 'index.js',
+    license: 'MIT',
   }));
 
   callback(null);
