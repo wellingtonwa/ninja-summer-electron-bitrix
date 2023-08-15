@@ -26,14 +26,14 @@ const Menu: FC<MenuProps> = (props) => {
           icon={<IconDashboard/>}
         />
         <NavLink
-          label="Configurações"
-          onClick={() => navigateTo(ScreenState.CONFIG)}
-          icon={<IconSettings/>}
-        />
-        <NavLink
           label="Restaurar DB"
           onClick={() => navigateTo(ScreenState.RESTORE)}
           icon={<IconDatabase/>}
+        />
+        <NavLink
+          label="Configurações"
+          onClick={() => navigateTo(ScreenState.CONFIG)}
+          icon={<IconSettings/>}
         />
       </Drawer>
     </>
