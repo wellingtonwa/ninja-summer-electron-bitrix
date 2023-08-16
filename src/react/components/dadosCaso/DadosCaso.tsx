@@ -1,5 +1,5 @@
 import React from "react";
-import { ActionIcon, ColorSwatch, Group, Image, NavLink, SimpleGrid, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, Image, SimpleGrid, Text, Tooltip } from "@mantine/core";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
 import {useClipboard} from "@mantine/hooks";
 import { IconExternalLink, IconClipboard } from "@tabler/icons-react";

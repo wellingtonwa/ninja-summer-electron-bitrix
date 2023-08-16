@@ -1,6 +1,5 @@
 import { useForm } from "@mantine/form";
-import { app } from "electron";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect } from "react";
 import { Configuracao } from "../../model/configuracao";
 import { ActionIcon, Box, Button, Group, PasswordInput, TextInput, Tooltip } from "@mantine/core";
 import { IconSearch } from '@tabler/icons-react'
