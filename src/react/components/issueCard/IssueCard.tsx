@@ -1,6 +1,6 @@
 import React, {ReactNode} from "react";
 import { IconClipboard, IconRefresh } from '@tabler/icons-react'
-import {Paper, Button, Title, Group, ActionIcon, Tooltip, ColorSwatch, Card, SimpleGrid} from "@mantine/core";
+import { Button, Title, Group, ActionIcon, Tooltip, ColorSwatch, Card, SimpleGrid} from "@mantine/core";
 import Database from "../../../model/Database";
 import DadosCaso from "../dadosCaso/DadosCaso";
 import {useClipboard} from "@mantine/hooks";
@@ -22,10 +22,6 @@ const IssueCard = (props: IssueCardProps) => {
   const {database, informacaoBitrix, openFolderAction, dropDatabaseAction, issueRefreshClick} = props;
   const clipboard = useClipboard({timeout: 500});
 
-  const paperStyle = (theme: any, estado: string | undefined) => ({
-      backgroundColor: `#${estado}`
-  });
-
   return (
       <Card shadow="xl" p="md" style={ {backgroundColor: '#5C5f66'}} >
         <Group spacing="xs">
@@ -33,9 +29,11 @@ const IssueCard = (props: IssueCardProps) => {
               <ColorSwatch color={`#${informacaoBitrix?.etapa?.COLOR}`}/>
           </Tooltip>}
           <Title order={3}>{database.dbname}</Title>
-          <ActionIcon component={IconClipboard} onClick={() => clipboard.copy(database.dbname)}/>
+          <Tooltip label="Copiar nome do banco de dados">
+            <ActionIcon component={IconClipboard} onClick={() => clipboard.copy(database.dbname)}/>
+          </Tooltip>
           {database.isTarefa && <Tooltip label="Atualizar as informações da tarefa">
-          <ActionIcon component={IconRefresh} onClick={() => issueRefreshClick(informacaoBitrix.id)}/>
+            <ActionIcon component={IconRefresh} onClick={() => issueRefreshClick(informacaoBitrix.id)}/>
           </Tooltip>}
         </Group>
 	<SimpleGrid cols={1}>
