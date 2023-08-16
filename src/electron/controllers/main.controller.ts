@@ -1,3 +1,4 @@
+import { app } from "electron";
 import { ScreenState } from "../../model/enumerated/screenState.enum";
 import mainService from "../service/main.service";
 import windowService from "../service/window.service";
@@ -18,6 +19,10 @@ class MainController {
 
   openLink(url: string) {
     mainService.openLink(url);
+  }
+
+  getVersion() {
+    return app.getVersion();
   }
 
 }

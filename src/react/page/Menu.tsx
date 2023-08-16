@@ -1,5 +1,5 @@
 import { Drawer, NavLink } from "@mantine/core";
-import React, { FC, useRef } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { ScreenState } from "../../model/enumerated/screenState.enum";
 import { useDisclosure } from "@mantine/hooks";
 import { IconDashboard, IconDatabase, IconSettings } from "@tabler/icons-react";
@@ -11,6 +11,16 @@ export interface MenuProps {
 }
 
 const Menu: FC<MenuProps> = (props) => {
+  
+  const [version, setVersion] = useState<String>('');
+
+  useEffect(() => {
+    findVersion();
+  }, []);
+
+  const findVersion = async () => {
+    setVersion(await ninja.main.getVersion());
+  }
 
   const navigateTo = (value: ScreenState) => {
     ninja.main.setScreenState(value); 
@@ -35,6 +45,9 @@ const Menu: FC<MenuProps> = (props) => {
           onClick={() => navigateTo(ScreenState.RESTORE)}
           icon={<IconDatabase/>}
         />
+        <p>
+          Versão: {version}
+        </p>
       </Drawer>
     </>
   )
