@@ -15,4 +15,5 @@ export default interface InformacaoBitrix {
     auditorsData?: UserBitrix[];
     group?: GrupoBitrix;
     codigoCliente?: string;
+    loading?: boolean;
 }

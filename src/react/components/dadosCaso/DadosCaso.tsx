@@ -17,7 +17,9 @@ const DadosCaso = (props: DadosCasoProps) => {
   const { dadosCaso } = props;
   const clipboard = useClipboard({timeout: 500});
 
-  return <SimpleGrid cols={1} verticalSpacing="xs">
+  return <>
+    
+    <SimpleGrid cols={1} verticalSpacing="xs">
   	   <div>
         <Group noWrap>
           <Text>
@@ -88,7 +90,8 @@ const DadosCaso = (props: DadosCasoProps) => {
           />
         </Group>
 	   </div>
-      </SimpleGrid>
+    </SimpleGrid>
+  </>
 }
 
 export default DadosCaso;

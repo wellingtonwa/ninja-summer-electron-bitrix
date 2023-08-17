@@ -1,134 +1,142 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Grid } from "@mantine/core";
-import { useDispatch } from "react-redux";
 import { notifications } from '@mantine/notifications';
 import { ScreenState } from "../../model/enumerated/screenState.enum";
 import IssueCard from "../components/issueCard/IssueCard";
+import DadosCaso from "../components/dadosCaso/DadosCaso";
 import Database from "../../model/Database";
-import { LogRefProps } from "./Log";
 import { REGEX_NUMEROCASO } from "../../constants";
 import { isNull, isEmpty } from "lodash";
 import InformacaoBitrix from "../../model/informacaoBitrix";
+import DadosCasoSkeleton from "../components/dadosCaso/DadosCasoSkeleton";
 
 const Home: FC = () => {
 
-    const [ loading, setLoading ] = useState<boolean>(false)
-    const [ databases, setDatabases ] = useState<Database[]>([])
-    const [ dadosBitrix, setDadosBitrix ] = useState<InformacaoBitrix[]>([]);
-    const dispatch = useDispatch();
-    const elementRef = useRef<LogRefProps>();
+  const [ databases, setDatabases ] = useState<Database[]>([])
+  const [ dadosBitrix, setDadosBitrix ] = useState<InformacaoBitrix[]>([]);
+  const [ loadingIssues, setLoadingIssues ] = useState<string[]>([]);
 
-    useEffect(() => {   
-      setLoading(true);
-      hasConnection();
-      findDbNames();
-      setLoading(false);
-    }, []);
+  useEffect(() => {   
+    hasConnection();
+    findDbNames();
+  }, []);
 
-    useEffect(() => {
-      findDadosBitrix();      
-    }, [databases]);
+  function getNumeroTarefa(item: Database) {
+    const numeroCaso = item && item.dbname && REGEX_NUMEROCASO.test(item.dbname) && item.dbname.match(REGEX_NUMEROCASO);
+    return numeroCaso ? numeroCaso[0] : null;
+  }
 
-    function getNumeroTarefa(item: Database) {
-      const numeroCaso = item && item.dbname && REGEX_NUMEROCASO.test(item.dbname) && item.dbname.match(REGEX_NUMEROCASO);
-      return numeroCaso ? numeroCaso[0] : null;
-    }
-
-    const findDadosBitrix = async () => {
-      if (await ninja.bitrix.isActive()) {
-        const numerosTarefas = databases.map(it => getNumeroTarefa(it)).filter(it => !isNull(it));
-        ninja.bitrix.getDadosTarefa(numerosTarefas).then((result: InformacaoBitrix[]) => {
-          setDadosBitrix(result);
-        });
-      } else if (databases.length > 0) {
-          showBitrixDesativado();
-      }
-    }
-    
-    const findDadosTarefa = async (numeroTarefa: string) => {
-        if (await ninja.bitrix.isActive() && numeroTarefa) {
-            ninja.bitrix.getDadosTarefa(numeroTarefa).then((result: InformacaoBitrix[]) => {
-                if (!isEmpty(result)) {
-                  setDadosBitrix(dadosBitrix.map(p => p.id === numeroTarefa ? result[0] : p));
-                }
-            });
-        } else {
-            showBitrixDesativado();
+  const findDadosBitrix = async (param: Database[]) => {
+    if (await ninja.bitrix.isActive()) {
+      const numerosTarefas = param.map(it => getNumeroTarefa(it)).filter(it => !isNull(it));
+      setLoadingIssues(numerosTarefas);
+      ninja.bitrix.getDadosTarefa(numerosTarefas).then((result: InformacaoBitrix[]) => {
+        let dados: Database[] = [];
+        for (const database of param) {
+          const informacaoBitrix = result.find(informacaoBitrix => informacaoBitrix.id === getNumeroTarefa(database));
+          informacaoBitrix ? dados.push({...database, ...{ informacaoBitrix, isTarefa: true }}) : dados.push(database); 
         }
-
+        setDatabases(dados);
+      });
+      setLoadingIssues([]);
+    } else if (databases.length > 0) {
+      showBitrixDesativado();
     }
-
-    const showBitrixDesativado = () => {
-        notifications.show({
-          title: 'Informação',
-          color: 'blue',
-          message: 'A url de integração com o Bitrix não foi definida. Para definir acesse as configurações.'
-        });
+  }
+  
+  const findDadosTarefa = async (numeroTarefa: string) => {
+    if (await ninja.bitrix.isActive() && numeroTarefa) {
+      // Colocando a tarefa com status de loading;
+      setLoadingIssues([...loadingIssues, ...[numeroTarefa]]);
+      ninja.bitrix.getDadosTarefa(numeroTarefa).then((result: InformacaoBitrix[]) => {
+        if (!isEmpty(result)) {
+          setDadosBitrix(dadosBitrix.map(p => p.id === numeroTarefa ? result[0] : p));
+        }
+        setLoadingIssues(loadingIssues.splice(loadingIssues.indexOf(numeroTarefa), 1));
+      });
+    } else {
+        showBitrixDesativado();
     }
+  }
 
-    const findComentarios = async () => {
-        console.log(await ninja.bitrix.getComentariosTarefa('33044'));
+  const showBitrixDesativado = () => {
+      notifications.show({
+        title: 'Informação',
+        color: 'blue',
+        message: 'A url de integração com o Bitrix não foi definida. Para definir acesse as configurações.'
+      });
+  }
+
+  const findComentarios = async () => {
+      console.log(await ninja.bitrix.getComentariosTarefa('33044'));
+  }
+
+  const hasConnection = async () => {
+    if (!await ninja.postgres.hasConnection()) {
+      notifications.show({
+        title: 'Erro',
+        color: 'red',
+        message: 'Não possível connectar ao banco de dados. Verifique as configurações.'
+      });
+      ninja.main.setScreenState(ScreenState.CONFIG);
     }
+  }
 
-    const hasConnection = async () => {
-      if (!await ninja.postgres.hasConnection()) {
-        notifications.show({
-          title: 'Erro',
-          color: 'red',
-          message: 'Não possível connectar ao banco de dados. Verifique as configurações.'
-        });
-        ninja.main.setScreenState(ScreenState.CONFIG);
-      }
+  const findDbNames = async () => {
+    findDadosBitrix(await ninja.dashboard.getDbnames());  
+  }
+
+  const dropDatabaseAction = async (databaseName: Database) => {
+    ninja.main.appendLog(`Dropando base de dados: ${databaseName.dbname}`);
+    try {
+      await ninja.postgres.dropDatabase(databaseName.dbname);
+    } catch (error) {
+      ninja.main.appendLog(`Erro ao apagar o banco de dados: ${databaseName.dbname}. Detalhes: ${error}`);
     }
+    await findDbNames();
+  }
 
-    const findDbNames = async () => {
-      const result = await ninja.dashboard.getDbnames();
-      setDatabases(result.map((it: Database) => ({isTarefa: getNumeroTarefa(it) !== null, ...it})));
+  const openFolder = async (database: Database) => {
+    const numeroCaso = getNumeroTarefa(database);
+    if(numeroCaso) {
+      await ninja.fileManager.openFolder(getNumeroTarefa(database));
+    } else {
+      notifications.show({
+        message: "Não foi encontrado o número do caso no nome do banco de dados.",
+      })
     }
+  }
 
-    const dropDatabaseAction = async (databaseName: Database) => {
-      ninja.main.appendLog(`Dropando base de dados: ${databaseName.dbname}`);
-      try {
-        await ninja.postgres.dropDatabase(databaseName.dbname);
-      } catch (error) {
-        ninja.main.appendLog(`Erro ao apagar o banco de dados: ${databaseName.dbname}. Detalhes: ${error}`);
-      }
-      await findDbNames();
-    }
+  const titleClick = (url: string) => {
+    ninja.main.openLink(url);
+  }
 
-    const openFolder = async (database: Database) => {
-      const numeroCaso = getNumeroTarefa(database);
-      if(numeroCaso) {
-        await ninja.fileManager.openFolder(getNumeroTarefa(database));
-      } else {
-        notifications.show({
-          message: "Não foi encontrado o número do caso no nome do banco de dados.",
-        })
-      }
-    }
+  const renderDadosTarefa = (informacaoBitrix: InformacaoBitrix) => {
+    const isLoading: boolean = loadingIssues.indexOf(informacaoBitrix.id) >=0;
+    return ( <>
+      {isLoading ? <DadosCasoSkeleton/> : <DadosCaso dadosCaso={informacaoBitrix} titleClick={titleClick}/>}
+    </>);
+  }
 
-    const titleClick = (url: string) => {
-      ninja.main.openLink(url);
-    }
-
-    return (
-        <>
-          <Grid>
-            {databases.map(it => 
-              <Grid.Col sm={12} md={6} xl={4} key={it.dbname} children={
-                <IssueCard 
-                  database={it} 
-                  dropDatabaseAction={dropDatabaseAction} 
-                  openFolderAction={openFolder}
-                  informacaoBitrix={dadosBitrix.find(ib => ib?.id === getNumeroTarefa(it))}
-                  issueRefreshClick={findDadosTarefa}
-                  issueTitleClick={titleClick}
-                  />
-              }/>
-            )}
-          </Grid>
-        </>
-    )
+  return (
+      <>
+        <Grid>
+          {databases.map(it => 
+            <Grid.Col sm={12} md={6} xl={4} key={it.dbname} children={
+              <IssueCard 
+                database={it} 
+                dropDatabaseAction={dropDatabaseAction} 
+                openFolderAction={openFolder}
+                issueRefreshClick={findDadosTarefa}
+                issueTitleClick={titleClick}
+                >
+                {it.informacaoBitrix && renderDadosTarefa(it.informacaoBitrix)}
+              </IssueCard>
+            }/>
+          )}
+        </Grid>
+      </>
+  )
 
 }
 
