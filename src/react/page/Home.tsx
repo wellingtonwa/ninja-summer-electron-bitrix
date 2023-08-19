@@ -39,7 +39,8 @@ const Home: FC = () => {
         setDatabases(dados);
       });
       setLoadingIssues([]);
-    } else if (databases.length > 0) {
+    } else if (param && param.length > 0) {
+      setDatabases(param);
       showBitrixDesativado();
     }
   }
