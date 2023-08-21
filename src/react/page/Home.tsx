@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
-import { Grid } from "@mantine/core";
+import { useDebouncedValue } from '@mantine/hooks';
+import { Grid, TextInput, Box, Group, ActionIcon } from "@mantine/core";
 import { notifications } from '@mantine/notifications';
 import { ScreenState } from "../../model/enumerated/screenState.enum";
 import IssueCard from "../components/issueCard/IssueCard";
@@ -15,11 +16,17 @@ const Home: FC = () => {
   const [ databases, setDatabases ] = useState<Database[]>([])
   const [ dadosBitrix, setDadosBitrix ] = useState<InformacaoBitrix[]>([]);
   const [ loadingIssues, setLoadingIssues ] = useState<string[]>([]);
+  const [ fieldDbname, setFieldDbname ] = useState<string>(null);
+  const [ fieldDbnameDebounced ] = useDebouncedValue(fieldDbname, 500);
 
   useEffect(() => {   
     hasConnection();
     findDbNames();
   }, []);
+
+  useEffect(() => {   
+    findDbNames();
+  }, [fieldDbnameDebounced]);
 
   function getNumeroTarefa(item: Database) {
     const numeroCaso = item && item.dbname && REGEX_NUMEROCASO.test(item.dbname) && item.dbname.match(REGEX_NUMEROCASO);
@@ -27,7 +34,7 @@ const Home: FC = () => {
   }
 
   const findDadosBitrix = async (param: Database[]) => {
-    if (await ninja.bitrix.isActive()) {
+    if (await ninja.bitrix.isActive() && param) {
       const numerosTarefas = param.map(it => getNumeroTarefa(it)).filter(it => !isNull(it));
       setLoadingIssues(numerosTarefas);
       ninja.bitrix.getDadosTarefa(numerosTarefas).then((result: InformacaoBitrix[]) => {
@@ -42,6 +49,8 @@ const Home: FC = () => {
     } else if (param && param.length > 0) {
       setDatabases(param);
       showBitrixDesativado();
+    } else {
+      setDatabases([]);
     }
   }
   
@@ -84,7 +93,7 @@ const Home: FC = () => {
   }
 
   const findDbNames = async () => {
-    findDadosBitrix(await ninja.dashboard.getDbnames());  
+    findDadosBitrix(await ninja.dashboard.getDbnames(fieldDbnameDebounced));  
   }
 
   const dropDatabaseAction = async (databaseName: Database) => {
@@ -120,23 +129,31 @@ const Home: FC = () => {
   }
 
   return (
-      <>
-        <Grid>
-          {databases.map(it => 
-            <Grid.Col sm={12} md={6} xl={4} key={it.dbname} children={
-              <IssueCard 
-                database={it} 
-                dropDatabaseAction={dropDatabaseAction} 
-                openFolderAction={openFolder}
-                issueRefreshClick={findDadosTarefa}
-                issueTitleClick={titleClick}
-                >
-                {it.informacaoBitrix && renderDadosTarefa(it.informacaoBitrix)}
-              </IssueCard>
-            }/>
-          )}
-        </Grid>
-      </>
+    <>
+      <Box mb="xs">
+        <Group grow>
+          <TextInput 
+            placeholder="Pesquise o nome do banco" 
+            onChange={event => setFieldDbname(event.currentTarget.value)} />
+        </Group>
+      </Box>
+      
+      <Grid>
+        {databases.map(it => 
+          <Grid.Col sm={12} md={6} xl={4} key={it.dbname} children={
+            <IssueCard 
+              database={it} 
+              dropDatabaseAction={dropDatabaseAction} 
+              openFolderAction={openFolder}
+              issueRefreshClick={findDadosTarefa}
+              issueTitleClick={titleClick}
+              >
+              {it.informacaoBitrix && renderDadosTarefa(it.informacaoBitrix)}
+            </IssueCard>
+          }/>
+        )}
+      </Grid>
+    </>
   )
 
 }
