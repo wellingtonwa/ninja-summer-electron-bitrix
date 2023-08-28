@@ -2,7 +2,7 @@ import React from "react";
 import { ActionIcon, Group, Image, SimpleGrid, Text, Tooltip } from "@mantine/core";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
 import {useClipboard} from "@mantine/hooks";
-import { IconExternalLink, IconClipboard } from "@tabler/icons-react";
+import { IconExternalLink, IconClipboard, IconMessageCircle } from "@tabler/icons-react";
 
 const link = "https://projetusti.bitrix24.com.br/workgroups/group/:groupId/tasks/task/view/:taskId/";
 
@@ -38,7 +38,7 @@ const DadosCaso = (props: DadosCasoProps) => {
           <Tooltip label={'Mostrar comentários'}>
             <ActionIcon 
               onClick={() => props.viewCommentsCLick(dadosCaso)}>
-              <IconExternalLink/>
+              <IconMessageCircle/>
             </ActionIcon>
           </Tooltip>
         </Group>

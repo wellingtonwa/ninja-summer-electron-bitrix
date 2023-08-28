@@ -181,7 +181,12 @@ const Home: FC = () => {
         </Group>
       </Box>
 
-      <Modal title="Comentários da tarefa" opened={openedComments} onClose={openedCommentsHandlers.close} size="100%">
+      <Modal 
+        title={
+          <Title order={4}>Comentários da tarefa</Title>
+        }
+        opened={openedComments} 
+        onClose={openedCommentsHandlers.close} fullScreen>
         <>
         {console.log(comments)}
         {comments.map((dado: ComentarioBitrix) => <>
@@ -190,9 +195,10 @@ const Home: FC = () => {
               m="xs"
               p="xs"
               >
-              <Title>
+              <Title order={3}>
                 {dado.AUTHOR_NAME} - {dado.POST_DATE}
               </Title>
+              <Divider/>
               <Text style={{whiteSpace: "pre-line"}}>
                 {convertEntities(dado.POST_MESSAGE)}
               </Text>

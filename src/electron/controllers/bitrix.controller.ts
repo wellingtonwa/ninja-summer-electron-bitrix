@@ -53,8 +53,8 @@ class BitrixController {
   }
 
   async getComentariosTarefa(numeroTarefa: string): Promise<ComentarioBitrix> {
-      const result = await bitrixApi.getDadosBitrix(BITRIX_METHODS.getComments.method, [{name: 'taskId', 'value': numeroTarefa}]);
-      return result;
+    const result = await bitrixApi.getDadosBitrix(BITRIX_METHODS.getComments.method, [{name: 'taskId', 'value': numeroTarefa}]);
+    return result.map(comment => ({...comment, ...{POST_DATE: moment(comment.POST_DATE).format('DD/MM/YYYY HH:mm:ss')}}));
   }
 
   async checkConfig() {
