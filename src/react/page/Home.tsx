@@ -1,23 +1,31 @@
 import React, { FC, useEffect, useState } from "react";
-import { useDebouncedValue } from '@mantine/hooks';
-import { Grid, TextInput, Box, Group, ActionIcon } from "@mantine/core";
+import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
+import { Grid, TextInput, Box, Group, ActionIcon, Text, Modal, Divider, Title } from "@mantine/core";
 import { notifications } from '@mantine/notifications';
-import { ScreenState } from "../../model/enumerated/screenState.enum";
-import IssueCard from "../components/issueCard/IssueCard";
-import DadosCaso from "../components/dadosCaso/DadosCaso";
-import Database from "../../model/Database";
+import { modals } from '@mantine/modals';
 import { REGEX_NUMEROCASO } from "../../constants";
 import { isNull, isEmpty } from "lodash";
 import InformacaoBitrix from "../../model/informacaoBitrix";
 import DadosCasoSkeleton from "../components/dadosCaso/DadosCasoSkeleton";
+import { ScreenState } from "../../model/enumerated/screenState.enum";
+import IssueCard from "../components/issueCard/IssueCard";
+import DadosCaso from "../components/dadosCaso/DadosCaso";
+import Database from "../../model/Database";
+import ComentarioBitrix from "../../model/comentarioBitrix";
+
+const HTML_ENTITIES = [/&quot;/gm, /&gt;/gm, /&lt;/gm];
+const HTML_ENTITIES_REPLACEMENT = ['"', '>', '<'];
 
 const Home: FC = () => {
 
   const [ databases, setDatabases ] = useState<Database[]>([])
   const [ dadosBitrix, setDadosBitrix ] = useState<InformacaoBitrix[]>([]);
   const [ loadingIssues, setLoadingIssues ] = useState<string[]>([]);
+  const [ loadingComments, setLoadingComments ] = useState<boolean>(true);
+  const [ comments, setComments ] = useState<ComentarioBitrix[]>([]);
   const [ fieldDbname, setFieldDbname ] = useState<string>(null);
   const [ fieldDbnameDebounced ] = useDebouncedValue(fieldDbname, 500);
+  const [ openedComments, openedCommentsHandlers ] = useDisclosure(false);
 
   useEffect(() => {   
     hasConnection();
@@ -77,8 +85,21 @@ const Home: FC = () => {
       });
   }
 
-  const findComentarios = async () => {
-      console.log(await ninja.bitrix.getComentariosTarefa('33044'));
+  const findComentarios = async (informacaoBitrix: InformacaoBitrix) => {
+    setLoadingComments(true);
+    try {
+      setComments(await ninja.bitrix.getComentariosTarefa(informacaoBitrix.id));
+      openedCommentsHandlers.open();
+    } catch (error) {
+      ninja.main.appendLog(`Erro ao carregar comentários: ${error}`)
+      notifications.show({
+        title: 'Erro',
+        color: 'red',
+        message: 'Não foi possível carregar os comentários.',
+      });
+    } finally {
+      setLoadingComments(false);
+    }
   }
 
   const hasConnection = async () => {
@@ -94,6 +115,20 @@ const Home: FC = () => {
 
   const findDbNames = async () => {
     findDadosBitrix(await ninja.dashboard.getDbnames(fieldDbnameDebounced));  
+  }
+
+  const dropConfirmation = async (database: Database) => {
+    modals.openConfirmModal({
+      title: 'Atenção',
+      children: (
+        <Text size="sm">
+          Deseja realmente apagar a base de dados '{database.dbname}'?
+        </Text>
+      ),
+      labels: { confirm: 'Sim', cancel: 'Não' },
+      confirmProps: {color: 'red'},
+      onConfirm: () => dropDatabaseAction(database)
+    })
   }
 
   const dropDatabaseAction = async (databaseName: Database) => {
@@ -124,8 +159,16 @@ const Home: FC = () => {
   const renderDadosTarefa = (informacaoBitrix: InformacaoBitrix) => {
     const isLoading: boolean = loadingIssues.indexOf(informacaoBitrix.id) >=0;
     return ( <>
-      {isLoading ? <DadosCasoSkeleton/> : <DadosCaso dadosCaso={informacaoBitrix} titleClick={titleClick}/>}
+      {isLoading ? <DadosCasoSkeleton/> : <DadosCaso dadosCaso={informacaoBitrix} titleClick={titleClick} viewCommentsCLick={findComentarios}/>}
     </>);
+  }
+
+  const convertEntities = (text: string) => {
+    let retorno = text;
+    for (let i = 0; i < HTML_ENTITIES.length; i++) {
+      retorno = retorno.replace(HTML_ENTITIES[i], HTML_ENTITIES_REPLACEMENT[i]);
+    }
+    return retorno;
   }
 
   return (
@@ -137,13 +180,33 @@ const Home: FC = () => {
             onChange={event => setFieldDbname(event.currentTarget.value)} />
         </Group>
       </Box>
+
+      <Modal title="Comentários da tarefa" opened={openedComments} onClose={openedCommentsHandlers.close} size="100%">
+        <>
+        {console.log(comments)}
+        {comments.map((dado: ComentarioBitrix) => <>
+            <Box sx={(theme) => 
+              ({backgroundColor: theme.colors.dark[5]})} 
+              m="xs"
+              p="xs"
+              >
+              <Title>
+                {dado.AUTHOR_NAME} - {dado.POST_DATE}
+              </Title>
+              <Text style={{whiteSpace: "pre-line"}}>
+                {convertEntities(dado.POST_MESSAGE)}
+              </Text>
+            </Box>
+          </>)}
+        </>
+      </Modal>
       
       <Grid>
         {databases.map(it => 
           <Grid.Col sm={12} md={6} xl={4} key={it.dbname} children={
             <IssueCard 
               database={it} 
-              dropDatabaseAction={dropDatabaseAction} 
+              dropDatabaseAction={dropConfirmation} 
               openFolderAction={openFolder}
               issueRefreshClick={findDadosTarefa}
               issueTitleClick={titleClick}

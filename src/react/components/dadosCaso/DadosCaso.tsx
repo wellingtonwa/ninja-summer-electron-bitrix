@@ -9,6 +9,7 @@ const link = "https://projetusti.bitrix24.com.br/workgroups/group/:groupId/tasks
 interface DadosCasoProps {
   dadosCaso: InformacaoBitrix;
   titleClick?: (url: string) => void;
+  viewCommentsCLick?: (dadosCaso: InformacaoBitrix) => void;
 }
 
 
@@ -31,6 +32,12 @@ const DadosCaso = (props: DadosCasoProps) => {
           <Tooltip label={'Abrir caso no Bitrix'}>
             <ActionIcon 
               onClick={() => props.titleClick(`${link.replace(':groupId', dadosCaso.group?.id ||'').replace(':taskId', dadosCaso.id||'')}`)}>
+              <IconExternalLink/>
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label={'Mostrar comentários'}>
+            <ActionIcon 
+              onClick={() => props.viewCommentsCLick(dadosCaso)}>
               <IconExternalLink/>
             </ActionIcon>
           </Tooltip>

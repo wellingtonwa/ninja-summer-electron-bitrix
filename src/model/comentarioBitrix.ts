@@ -5,5 +5,5 @@ export default interface ComentarioBitrix {
    AUTHOR_NAME: string; 
    AUTHOR_EMAIL: string; 
    POST_DATE: string; 
-   POST_COMMENT: string; 
+   POST_MESSAGE: string; 
 }

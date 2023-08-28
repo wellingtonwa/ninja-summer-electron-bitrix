@@ -1,17 +1,18 @@
 import React, { FC } from "react";
-import { MantineProvider } from "@mantine/core";
-import { createHashRouter, RouterProvider } from 'react-router-dom'
-import RouteHandler from "./components/routerHandler/RouterHandler";
-import Home from "./page/Home";
-import Config from "./page/Config";
-import Update from "./page/Update";
-import Layout from "./components/Layout";
 import { Provider } from "react-redux"
-import store from './store';
-import Splash from "./page/Splash";
+import { MantineProvider } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
-import Restore from "./page/Restore";
 import { useDisclosure } from "@mantine/hooks";
+import { createHashRouter, RouterProvider } from 'react-router-dom'
+import Config from "./page/Config";
+import Home from "./page/Home";
+import Layout from "./components/Layout";
+import RouteHandler from "./components/routerHandler/RouterHandler";
+import Restore from "./page/Restore";
+import Splash from "./page/Splash";
+import Update from "./page/Update";
+import store from './store';
  
 
 
@@ -56,8 +57,10 @@ const App: FC = () => {
     return (
       <Provider store={store}>
         <MantineProvider withCSSVariables withGlobalStyles theme={{ colorScheme: 'dark' }}>
-          <Notifications/>
-          <RouterProvider router={router}/>
+          <ModalsProvider>
+            <Notifications/>
+            <RouterProvider router={router}/>
+          </ModalsProvider>
         </MantineProvider>
       </Provider>
     );
