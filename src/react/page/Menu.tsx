@@ -32,7 +32,7 @@ const Menu: FC<MenuProps> = (props) => {
       <Drawer opened={props.state} onClose={props.closeFunction}>
         <NavLink
           label="Dashboard"
-          onClick={() => navigateTo(ScreenState.HOME)}
+          onClick={() => navigateTo(ScreenState.DASHBOARD)}
           icon={<IconDashboard/>}
         />
         <NavLink

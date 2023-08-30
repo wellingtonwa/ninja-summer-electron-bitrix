@@ -6,7 +6,7 @@ import { Notifications } from "@mantine/notifications";
 import { useDisclosure } from "@mantine/hooks";
 import { createHashRouter, RouterProvider } from 'react-router-dom'
 import Config from "./page/Config";
-import Home from "./page/Home";
+import Dashboard from "./page/dashboard/Dashboard";
 import Layout from "./components/Layout";
 import RouteHandler from "./components/routerHandler/RouterHandler";
 import Restore from "./page/Restore";
@@ -26,8 +26,8 @@ const router = createHashRouter([
         element: <Layout/>,
         children: [
           {
-            path: 'home',
-            element: <Home />,
+            path: 'dashboard',
+            element: <Dashboard />,
           },
           {
             path: 'config',

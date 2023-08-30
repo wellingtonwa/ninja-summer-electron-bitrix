@@ -1,7 +1,7 @@
-import React from "react";
-import { ActionIcon, Group, Image, SimpleGrid, Text, Tooltip } from "@mantine/core";
+import React, { useState } from "react";
+import { ActionIcon, Group, Image, SimpleGrid, Text, Title, Tooltip } from "@mantine/core";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
-import {useClipboard} from "@mantine/hooks";
+import {useClipboard, useDisclosure} from "@mantine/hooks";
 import { IconExternalLink, IconClipboard, IconMessageCircle } from "@tabler/icons-react";
 
 const link = "https://projetusti.bitrix24.com.br/workgroups/group/:groupId/tasks/task/view/:taskId/";
@@ -14,12 +14,10 @@ interface DadosCasoProps {
 
 
 const DadosCaso = (props: DadosCasoProps) => {
-
   const { dadosCaso } = props;
   const clipboard = useClipboard({timeout: 500});
 
   return <>
-    
     <SimpleGrid cols={1} verticalSpacing="xs">
   	   <div>
         <Group noWrap>
@@ -33,12 +31,6 @@ const DadosCaso = (props: DadosCasoProps) => {
             <ActionIcon 
               onClick={() => props.titleClick(`${link.replace(':groupId', dadosCaso.group?.id ||'').replace(':taskId', dadosCaso.id||'')}`)}>
               <IconExternalLink/>
-            </ActionIcon>
-          </Tooltip>
-          <Tooltip label={'Mostrar comentários'}>
-            <ActionIcon 
-              onClick={() => props.viewCommentsCLick(dadosCaso)}>
-              <IconMessageCircle/>
             </ActionIcon>
           </Tooltip>
         </Group>

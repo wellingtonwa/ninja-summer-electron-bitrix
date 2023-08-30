@@ -1,11 +1,15 @@
+import moment from "moment";
+import path  from 'path';
+import { isEmpty, isNull, isString, isArray } from "lodash";
 import { FiltroBitrix } from "../../model/filtroBitrix";
 import ComentarioBitrix from "../../model/comentarioBitrix";
-import { BITRIX_METHODS, FIELDS_USED_IN_BITRIX_API } from "../../constants";
+import InformacaoBitrix from "../../model/informacaoBitrix";
+import AttachedObjectBitrix from "../../model/bitrix/attachedObjectBitrix";
+import { BITRIX_METHODS } from "../../constants";
 import bitrixApi from "../api/bitrix.api";
 import configController from "./config.controller";
-import { isEmpty, isNull, isString } from "lodash";
-import InformacaoBitrix from "../../model/informacaoBitrix";
-import moment from "moment";
+import fileManagerController from "./fileManager.controller";
+import restoreService from "../service/restore.service";
 
 class BitrixController {
 
@@ -46,6 +50,7 @@ class BitrixController {
           'auditorsData': task.auditorsData,
           'group': task.group,
           'codigoCliente': task.ufAuto675766807491,
+          'attachments': task.ufTaskWebdavFiles,
         });
       }
     }
@@ -54,7 +59,18 @@ class BitrixController {
 
   async getComentariosTarefa(numeroTarefa: string): Promise<ComentarioBitrix> {
     const result = await bitrixApi.getDadosBitrix(BITRIX_METHODS.getComments.method, [{name: 'taskId', 'value': numeroTarefa}]);
-    return result.map(comment => ({...comment, ...{POST_DATE: moment(comment.POST_DATE).format('DD/MM/YYYY HH:mm:ss')}}));
+    return result.map((comment: ComentarioBitrix) => ({...comment, ...{POST_DATE: moment(comment.POST_DATE).format('DD/MM/YYYY HH:mm:ss')}}));
+  }
+
+  async getArquivos(id: string | string[]): Promise<AttachedObjectBitrix[]> {
+    let result: AttachedObjectBitrix[] = [];
+    if (isString(id)) {
+      result.push(await bitrixApi.getDadosBitrix(BITRIX_METHODS.getAttachedObject.method, [{name: 'id', 'value': id}]));
+    } else {
+      const requestPromises = id.map(it => bitrixApi.getDadosBitrix(BITRIX_METHODS.getAttachedObject.method, [{name: 'id', 'value': it}]));
+      result = await Promise.all(requestPromises);
+    }
+    return result;
   }
 
   async checkConfig() {
@@ -63,6 +79,16 @@ class BitrixController {
     bitrixApi.reloadConfig();
   }
   
+  async downloadAttachment(attachments: AttachedObjectBitrix | AttachedObjectBitrix[], informacaoBitrix: InformacaoBitrix) {
+    let config = configController.getConfiguracao();
+    const dest = path.resolve(config.issueFolder, `tarefa-${informacaoBitrix.id}`)
+    if (!isArray(attachments)) {
+      await restoreService.httpsDownload({url: attachments.DOWNLOAD_URL, dest: path.resolve(dest, attachments.NAME), hasFileNameOnPath: true });
+    } else {
+      const requestPromises = attachments.map(attachment => restoreService.httpsDownload({url: attachment.DOWNLOAD_URL, dest: path.resolve(dest, attachment.NAME), hasFileNameOnPath: true }));
+      await Promise.all(requestPromises);
+    }
+  }
 
   isActive() {
     return this.active;

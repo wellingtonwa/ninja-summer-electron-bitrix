@@ -22,7 +22,7 @@ class MainService {
       this.screenState = ScreenState.UPDATE;
     } else {
       if (configController.getConfiguracao()) {
-        this.screenState = ScreenState.HOME;
+        this.screenState = ScreenState.DASHBOARD;
       } else {
         this.screenState = ScreenState.CONFIG;
       }

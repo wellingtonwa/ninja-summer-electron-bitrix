@@ -5,6 +5,7 @@ export const REGEX_NUMEROCASO = /(?<=.*)\d{5}$/g;
 export const BITRIX_METHODS = {
   getTask: {method: 'tasks.task.get', requiredParams: ['taskId']},
   getStage: {method: 'task.stages.get', requiredParams: ['entityId']},
+  getAttachedObject: {method: 'disk.attachedObject.get', requiredParams: ['id']},
   getComments: {method: 'task.commentitem.getlist', requiredParams: ['taskId']},
 };
 export const BITRIX_FIELDS = [
