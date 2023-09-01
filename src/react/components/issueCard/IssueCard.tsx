@@ -2,7 +2,7 @@ import React, {ReactNode, useState} from "react";
 import { isArray } from "lodash";
 import { notifications } from "@mantine/notifications";
 import {useClipboard, useDisclosure} from "@mantine/hooks";
-import { Button, Title, Group, ActionIcon, Tooltip, ColorSwatch, Card, SimpleGrid, Text } from "@mantine/core";
+import { Button, Title, Group, ActionIcon, Tooltip, ColorSwatch, Card, SimpleGrid, Text, Indicator } from "@mantine/core";
 import { IconClipboard, IconFileDownload, IconFolderOpen, IconMessageCircle, IconRefresh, IconTrashXFilled } from '@tabler/icons-react'
 import Database from "../../../model/Database";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
@@ -68,7 +68,12 @@ const IssueCard = (props: IssueCardProps) => {
 
   return (
     <>
-      <ComentariosView opened={openedComments} close={openedCommentsHandlers.close} comments={comments}/>
+      <ComentariosView 
+        opened={openedComments} 
+        close={openedCommentsHandlers.close} 
+        comments={comments}
+        informacaoBitrix={database.informacaoBitrix}
+      />
       <ArquivosView 
         title={<Title order={4}>Arquivos</Title>} 
         opened={openedArquivos} 
@@ -119,14 +124,16 @@ const IssueCard = (props: IssueCardProps) => {
             </Tooltip>
             {hasAttachments && <>
               <Tooltip label="Mostrar arquivos anexados na tarefa">
-                <ActionIcon 
-                  onClick={() => findArquivos(database?.informacaoBitrix)}
-                  size="lg"
-                  color="blue"
-                  variant="filled"
-                >
-                  <IconFileDownload/>
-                </ActionIcon>
+                <Indicator inline label={database?.informacaoBitrix?.attachments?.length} size={12}>
+                  <ActionIcon 
+                    onClick={() => findArquivos(database?.informacaoBitrix)}
+                    size="lg"
+                    color="blue"
+                    variant="filled"
+                  >
+                    <IconFileDownload/>
+                  </ActionIcon>
+                </Indicator>
               </Tooltip>
             </>}
             {database.isTarefa && <Tooltip label={'Mostrar comentários'}>

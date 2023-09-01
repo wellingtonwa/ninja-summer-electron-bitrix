@@ -55,7 +55,7 @@ const Config: FC = () => {
       await ninja.postgres.reconnect();
       await ninja.bitrix.checkConfig();
       if (ninja.postgres.hasConnection()) {
-        ninja.main.setScreenState(ScreenState.HOME);
+        ninja.main.setScreenState(ScreenState.DASHBOARD);
       }
     } catch (error) {
       notifications.show({

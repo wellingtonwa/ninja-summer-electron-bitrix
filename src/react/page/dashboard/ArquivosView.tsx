@@ -37,7 +37,7 @@ const ArquivosView: FC<ArquivosViewProps> = props => {
     return props.arquivos.map(arquivo => (
       <tr key={arquivo.ID}>
         <td>{arquivo.NAME}</td>
-        <td>{arquivo.SIZE}</td>
+        <td>{(Number(arquivo.SIZE)/1024).toFixed(2)} Kb</td>
         <td>
           <ActionIcon onClick={() => downloadAttachment(arquivo)}>
             <IconDownload/>
@@ -45,8 +45,8 @@ const ArquivosView: FC<ArquivosViewProps> = props => {
         </td>
       </tr>
     ))
-
   }
+
   return <>
     <Modal title={props.title} opened={props.opened} onClose={props.close} fullScreen>
       <Table striped>

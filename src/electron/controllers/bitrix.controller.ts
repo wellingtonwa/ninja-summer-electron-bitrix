@@ -5,15 +5,16 @@ import { FiltroBitrix } from "../../model/filtroBitrix";
 import ComentarioBitrix from "../../model/comentarioBitrix";
 import InformacaoBitrix from "../../model/informacaoBitrix";
 import AttachedObjectBitrix from "../../model/bitrix/attachedObjectBitrix";
-import { BITRIX_METHODS } from "../../constants";
+import { BITRIX_MAIN_URL, BITRIX_METHODS } from "../../constants";
 import bitrixApi from "../api/bitrix.api";
 import configController from "./config.controller";
-import fileManagerController from "./fileManager.controller";
 import restoreService from "../service/restore.service";
+import CommentAttachmentBitrix from "src/model/bitrix/commentAttachmentBitrix";
 
 class BitrixController {
 
   active: boolean;
+  mainUrl: string;
 
   constructor() {
     this.checkConfig();
@@ -75,7 +76,10 @@ class BitrixController {
 
   async checkConfig() {
     const config = await configController.getConfiguracao();
-    this.active = !isEmpty(config?.bitrixApiURL) && !isNull(config?.bitrixApiURL)
+    this.active = !isEmpty(config?.bitrixApiURL) && !isNull(config?.bitrixApiURL);
+    if (this.active) {
+      this.mainUrl = config.bitrixApiURL.match(BITRIX_MAIN_URL)[0];
+    }
     bitrixApi.reloadConfig();
   }
   
@@ -86,6 +90,17 @@ class BitrixController {
       await restoreService.httpsDownload({url: attachments.DOWNLOAD_URL, dest: path.resolve(dest, attachments.NAME), hasFileNameOnPath: true });
     } else {
       const requestPromises = attachments.map(attachment => restoreService.httpsDownload({url: attachment.DOWNLOAD_URL, dest: path.resolve(dest, attachment.NAME), hasFileNameOnPath: true }));
+      await Promise.all(requestPromises);
+    }
+  }
+
+  async downloadCommentAttachment(attachments: CommentAttachmentBitrix | CommentAttachmentBitrix[], informacaoBitrix: InformacaoBitrix) {
+    let config = configController.getConfiguracao();
+    const dest = path.resolve(config.issueFolder, `tarefa-${informacaoBitrix.id}`);
+    if (!isArray(attachments)) {
+      await restoreService.httpsDownload({url: `${this.mainUrl}${attachments.DOWNLOAD_URL}`, dest: path.resolve(dest, attachments.NAME), hasFileNameOnPath: true });
+    } else {
+      const requestPromises = attachments.map(attachment => restoreService.httpsDownload({url: `${this.mainUrl}${attachment.DOWNLOAD_URL}`, dest: path.resolve(dest, attachment.NAME), hasFileNameOnPath: true }));
       await Promise.all(requestPromises);
     }
   }

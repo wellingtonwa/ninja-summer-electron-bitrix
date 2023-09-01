@@ -5,19 +5,16 @@ import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
 import { REGEX_NUMEROCASO } from "../../../constants";
 import { isNull, isEmpty } from "lodash";
-import ComentariosView from "./ComentariosView";
 import DadosCasoSkeleton from "../../components/dadosCaso/DadosCasoSkeleton";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
 import { ScreenState } from "../../../model/enumerated/screenState.enum";
 import IssueCard from "../../components/issueCard/IssueCard";
 import DadosCaso from "../../components/dadosCaso/DadosCaso";
 import Database from "../../../model/Database";
-import ComentarioBitrix from "../../../model/comentarioBitrix";
 
 const Dashboard: FC = () => {
 
   const [ databases, setDatabases ] = useState<Database[]>([])
-  const [ dadosBitrix, setDadosBitrix ] = useState<InformacaoBitrix[]>([]);
   const [ loadingIssues, setLoadingIssues ] = useState<string[]>([]);
   const [ fieldDbname, setFieldDbname ] = useState<string>(null);
   const [ fieldDbnameDebounced ] = useDebouncedValue(fieldDbname, 500);
@@ -64,7 +61,7 @@ const Dashboard: FC = () => {
       setLoadingIssues([...loadingIssues, ...[numeroTarefa]]);
       ninja.bitrix.getDadosTarefa(numeroTarefa).then((result: InformacaoBitrix[]) => {
         if (!isEmpty(result)) {
-          setDadosBitrix(dadosBitrix.map(p => p.id === numeroTarefa ? result[0] : p));
+          setDatabases(databases.map(p => p.isTarefa && p.informacaoBitrix.id === numeroTarefa ? {...p, ...{informacaoBitrix: result[0]}} : p));
         }
         setLoadingIssues(loadingIssues.splice(loadingIssues.indexOf(numeroTarefa), 1));
       });
