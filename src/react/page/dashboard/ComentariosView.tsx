@@ -5,6 +5,7 @@ import ComentarioBitrix from "../../../model/comentarioBitrix";
 import CommentAttachmentBitrix from '../../../model/bitrix/commentAttachmentBitrix';
 import InformacaoBitrix from '../../../model/informacaoBitrix';
 import { IconDownload, IconFile } from '@tabler/icons-react';
+import parser from 'bbcode-to-react';
 
 interface ComentariosViewProps {
   opened: boolean;
@@ -15,13 +16,14 @@ interface ComentariosViewProps {
 
 const ComentariosView: FC<ComentariosViewProps> = props => {
   
-  const HTML_ENTITIES = [/&quot;/gm, /&gt;/gm, /&lt;/gm, /&#39;/gm];
-  const HTML_ENTITIES_REPLACEMENT = ['"', '>', '<', '\''];
+  const HTML_ENTITIES = [/&quot;/gm, /&gt;/gm, /&lt;/gm, /&#39;/gm, /&amp;/gm];
+  const HTML_ENTITIES_REPLACEMENT = ['"', '>', '<', '\'', '&'];
   const theme = useMantineTheme();
 
   const convertEntities = (text: string) => {
     let retorno = text;
     for (let i = 0; i < HTML_ENTITIES.length; i++) {
+      console.log(HTML_ENTITIES[i], HTML_ENTITIES_REPLACEMENT[i]);
       retorno = retorno.replace(HTML_ENTITIES[i], HTML_ENTITIES_REPLACEMENT[i]);
     }
     return retorno;
@@ -89,23 +91,23 @@ const ComentariosView: FC<ComentariosViewProps> = props => {
   return <>
       <Modal 
         title={
-          <Title order={4}>Comentários da tarefa</Title>
+          <Title order={4}>Comentários da tarefa {props?.informacaoBitrix?.id}</Title>
         }
         opened={props.opened} 
         onClose={props.close} fullScreen>
         <>
         {props.comments.map((dado: ComentarioBitrix) => <>
-            <Box sx={(theme) => 
+            <Box key={dado.ID} sx={(theme) => 
               ({backgroundColor: theme.colors.dark[5]})} 
               m="xs"
               p="xs"
               >
-              <Title order={3}>
+              <Text size="xl" fw={700}>
                 {dado.AUTHOR_NAME} - {dado.POST_DATE}
-              </Title>
+              </Text>
               <Divider/>
               <Text style={{whiteSpace: "pre-line"}}>
-                {convertEntities(dado.POST_MESSAGE)}
+                {parser.toReact(convertEntities(dado.POST_MESSAGE))}
               </Text>
               {dado.ATTACHED_OBJECTS && renderCommentAttchments(dado)}
             </Box>
