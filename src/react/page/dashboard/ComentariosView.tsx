@@ -23,7 +23,6 @@ const ComentariosView: FC<ComentariosViewProps> = props => {
   const convertEntities = (text: string) => {
     let retorno = text;
     for (let i = 0; i < HTML_ENTITIES.length; i++) {
-      console.log(HTML_ENTITIES[i], HTML_ENTITIES_REPLACEMENT[i]);
       retorno = retorno.replace(HTML_ENTITIES[i], HTML_ENTITIES_REPLACEMENT[i]);
     }
     return retorno;
@@ -91,7 +90,7 @@ const ComentariosView: FC<ComentariosViewProps> = props => {
   return <>
       <Modal 
         title={
-          <Title order={4}>Comentários da tarefa {props?.informacaoBitrix?.id}</Title>
+          <>Comentários da tarefa {props?.informacaoBitrix?.id}</>
         }
         opened={props.opened} 
         onClose={props.close} fullScreen>

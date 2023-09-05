@@ -46,7 +46,7 @@ import { EVENT_APPEND_LOG } from "../../constants";
                   <ActionIcon onClick={closeLog} color="dark"><IconArticleOff/></ActionIcon>
                 </Tooltip>
               </Group>
-              <Textarea value={texto} size="md" minRows={6} maxRows={6} />
+              <Textarea value={texto} size="md" minRows={6} maxRows={6} onChange={() => {}}/>
             </Box>
           </Collapse>      
         </Affix>

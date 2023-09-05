@@ -2,7 +2,7 @@ import React, {ReactNode, useState} from "react";
 import { isArray } from "lodash";
 import { notifications } from "@mantine/notifications";
 import {useClipboard, useDisclosure} from "@mantine/hooks";
-import { Button, Title, Group, ActionIcon, Tooltip, ColorSwatch, Card, SimpleGrid, Text, Indicator } from "@mantine/core";
+import { Title, Group, ActionIcon, Tooltip, ColorSwatch, Card, SimpleGrid, Indicator, Text } from "@mantine/core";
 import { IconClipboard, IconFileDownload, IconFolderOpen, IconMessageCircle, IconRefresh, IconTrashXFilled } from '@tabler/icons-react'
 import Database from "../../../model/Database";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
@@ -75,7 +75,7 @@ const IssueCard = (props: IssueCardProps) => {
         informacaoBitrix={database.informacaoBitrix}
       />
       <ArquivosView 
-        title={<Title order={4}>Arquivos</Title>} 
+        title={<Text size="xl" fw={700}>Arquivos</Text>}
         opened={openedArquivos} 
         close={openedArquivosHandlers.close} 
         arquivos={arquivos}
