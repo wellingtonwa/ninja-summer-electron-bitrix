@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
-import { useDebouncedValue, useDisclosure, useFocusTrap } from '@mantine/hooks';
-import { Grid, TextInput, Box, Group, ActionIcon, Text, Modal, Divider, Title } from "@mantine/core";
+import { useDebouncedValue, useFocusTrap } from '@mantine/hooks';
+import { Grid, TextInput, Box, Group, Text } from "@mantine/core";
 import { notifications } from '@mantine/notifications';
 import { modals } from '@mantine/modals';
 import { REGEX_NUMEROCASO } from "../../../constants";
@@ -11,12 +11,15 @@ import { ScreenState } from "../../../model/enumerated/screenState.enum";
 import IssueCard from "../../components/issueCard/IssueCard";
 import DadosCaso from "../../components/dadosCaso/DadosCaso";
 import Database from "../../../model/Database";
+import { getFormData, saveFormData } from "../../store/local/localstorage";
+import { LocalStorageKey } from "../../../model/enumerated/localStorageKey.enum";
 
 const Dashboard: FC = () => {
 
   const [ databases, setDatabases ] = useState<Database[]>([])
   const [ loadingIssues, setLoadingIssues ] = useState<string[]>([]);
-  const [ fieldDbname, setFieldDbname ] = useState<string>(null);
+  const searchFormData = getFormData(LocalStorageKey.FORM_SEARCH_DATABASE);
+  const [ fieldDbname, setFieldDbname ] = useState<string>(searchFormData?.data?.fieldDbnameDebounced);
   const [ fieldDbnameDebounced ] = useDebouncedValue(fieldDbname, 500);
   const searchFieldFocusTrap = useFocusTrap(true);
 
@@ -90,6 +93,7 @@ const Dashboard: FC = () => {
   }
 
   const findDbNames = async () => {
+    saveFormData({formName: LocalStorageKey.FORM_SEARCH_DATABASE, data: {fieldDbnameDebounced}});
     findDadosBitrix(await ninja.dashboard.getDbnames(fieldDbnameDebounced));  
   }
 
@@ -145,6 +149,7 @@ const Dashboard: FC = () => {
         <Group grow>
           <TextInput 
             placeholder="Pesquise o nome do banco" 
+            value={fieldDbname}
             onChange={event => setFieldDbname(event.currentTarget.value)} />
         </Group>
       </Box>

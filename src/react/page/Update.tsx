@@ -1,7 +1,11 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { Title, Center, Group } from "@mantine/core";
 
 const Update: FC = () => {
+
+  useEffect(() => {
+    localStorage.clear();
+  });
 
   return <>
     <Center mx="auto">

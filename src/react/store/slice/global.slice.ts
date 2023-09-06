@@ -1,17 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import Picture from '../../../model/picture';
-import { stat } from 'original-fs';
 
 export interface GlobalState {
-  pictures: Picture[] | null;
   logVisible: boolean | false;
-  currentPicture: Picture | null;
+  formStore: any;
 }
 
 const initialState: GlobalState = {
   logVisible: false,
-  pictures: [],
-  currentPicture: null
+  formStore: {},
 };
 
 export const globalSlice = createSlice({
@@ -24,15 +20,9 @@ export const globalSlice = createSlice({
     logToggle: (state, action) => {
       state.logVisible = !state.logVisible;
     },
-    addPicture: (state, action) => {
-      state.pictures = [...state.pictures, action.payload];
+    setFormStore: (state, action) => {
+      state.formStore = action.payload;
     },
-    cleanPictures: (state, action) => {
-      state.pictures = [];
-    },
-    setCurrentPicture: (state, action) => {
-      state.currentPicture = action.payload;
-    }
   },
 });
 

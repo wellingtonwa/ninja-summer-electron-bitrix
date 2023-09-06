@@ -1,31 +1,38 @@
-import { ActionIcon, Button, FileInput, Group, Space, Tabs, TextInput, Tooltip } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { IconDownload, IconSearch } from "@tabler/icons-react";
 import React, { FC } from "react";
+import { ActionIcon, Button, Group, Space, Tabs, TextInput, Tooltip } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { useFocusTrap } from '@mantine/hooks';
 import { RestoreLink } from "../../model/restoreLink";
 import { useDispatch } from "react-redux";
 import { globalActions } from "../store/slice/global.slice";
 import { RestoreArquivo } from "../../model/restoreArquivo";
+import { IconDownload, IconSearch } from "@tabler/icons-react";
+import { getFormData, saveFormData, FormData } from "../store/local/localstorage";
+import { LocalStorageKey } from "../../model/enumerated/localStorageKey.enum";
 
 const Restore: FC = () => {
 
   const dispatch = useDispatch();
+  const formRestoreLink: FormData = getFormData(LocalStorageKey.FORM_RESTORE_LINK);
+  const formRestoreFile: FormData = getFormData(LocalStorageKey.FORM_RESTORE_FILE);
+  const nomeBancoFocusTrap = useFocusTrap(true);
+
 
   const form = useForm<RestoreLink>({
     initialValues: {
-        nomeBanco: undefined,
-        link: undefined
+      nomeBanco: formRestoreLink.data ? formRestoreLink.data.nomeBanco : undefined,
+      link: formRestoreLink.data ? formRestoreLink.data.link : undefined
     },
     validate: (values) => ({
-        'nomeBanco': !!!values['nomeBanco'] ? "Informe o nome do banco" : null,
+        nomeBanco: !!!values['nomeBanco'] ? "Informe o nome do banco" : null,
         link: !!!values.link ? "Informe o link" : null,
     })
   });
 
   const formArquivo = useForm({
     initialValues: {
-        nomeBanco: undefined,
-        arquivo: undefined as any,
+        nomeBanco: formRestoreFile.data ? formRestoreFile.data.nomeBanco : undefined,
+        arquivo: formRestoreFile.data ? formRestoreFile.data.arquivo : undefined as any,
     },
     validate: (values) => ({
         nomeBanco: !!!values['nomeBanco'] ? "Informe o nome do banco" : null,
@@ -42,11 +49,13 @@ const Restore: FC = () => {
   }
 
   const handleSubmit = (values: RestoreLink) => {
+    saveFormData({formName: LocalStorageKey.FORM_RESTORE_LINK, data: values});
     ninja.restore.restoreDatabase(values);
     dispatch(globalActions.setLogVisible(true));
   }
 
   const handleSubmitArquivo = (values: RestoreArquivo) => {
+    saveFormData({formName: LocalStorageKey.FORM_RESTORE_FILE, data: values});
     ninja.restore.restoreDatabase(values);
     dispatch(globalActions.setLogVisible(true));
   }
@@ -58,7 +67,7 @@ const Restore: FC = () => {
         <Tabs.Tab value="via-link" icon={<IconDownload/>}>Via Link</Tabs.Tab>
         <Tabs.Tab value="via-arquivo" icon={<IconDownload/>}>Via Arquivo</Tabs.Tab>
       </Tabs.List>
-      <Tabs.Panel value="via-link" pt="xs">
+      <Tabs.Panel value="via-link" pt="xs" ref={nomeBancoFocusTrap}>
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <TextInput size="md" placeholder="Nome do banco"
                       {...form.getInputProps('nomeBanco')}/>
