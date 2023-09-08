@@ -46,6 +46,17 @@ class WindowService implements LogService {
       });
   }
 
+  exitConfirmation() {
+    
+    return dialog.showMessageBoxSync(this.mainWindow, {
+      type: 'question',
+      buttons: ['Sim', 'Não'],
+      title: 'Confirmação',
+      message: 'Deseja realmente sair?'
+    });
+
+  }
+
   private exists() {
     return this.mainWindow && !this.mainWindow.isDestroyed();
   }
