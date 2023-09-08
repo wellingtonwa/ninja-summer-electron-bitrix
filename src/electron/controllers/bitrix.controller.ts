@@ -5,11 +5,11 @@ import { FiltroBitrix } from "../../model/filtroBitrix";
 import ComentarioBitrix from "../../model/comentarioBitrix";
 import InformacaoBitrix from "../../model/informacaoBitrix";
 import AttachedObjectBitrix from "../../model/bitrix/attachedObjectBitrix";
+import CommentAttachmentBitrix from "../../model/bitrix/commentAttachmentBitrix";
 import { BITRIX_MAIN_URL, BITRIX_METHODS } from "../../constants";
 import bitrixApi from "../api/bitrix.api";
 import configController from "./config.controller";
 import restoreService from "../service/restore.service";
-import CommentAttachmentBitrix from "src/model/bitrix/commentAttachmentBitrix";
 
 class BitrixController {
 
