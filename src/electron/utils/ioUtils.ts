@@ -1,9 +1,19 @@
 import path from 'path';
-import fs from 'fs';
+import fs, { constants } from 'fs';
 import admZip from 'adm-zip';
 
 const REGEX_DOWNLOADED_FILENAME = /(?<=attachment; filename=").*(?=";)/g;
 const REGEX_ARQUIVOBACK = /.*\.backup$/g;
+
+// Tests user's permissions for file or directory specified by path
+export const canReadAndWrite = (path: string) => {
+  try {
+    fs.accessSync(path, constants.R_OK | constants.R_OK);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 export const apagarArquivo = (arquivo: any) => {
   const dir = path.join(__dirname, `../../uploads/${arquivo}`);

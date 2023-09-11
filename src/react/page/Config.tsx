@@ -1,10 +1,10 @@
-import { useForm } from "@mantine/form";
 import React, { FC, useEffect } from "react";
-import { Configuracao } from "../../model/configuracao";
+import { useForm } from "@mantine/form";
 import { ActionIcon, Box, Button, Group, PasswordInput, TextInput, Tooltip } from "@mantine/core";
-import { IconSearch } from '@tabler/icons-react'
-import { ScreenState } from "../../model/enumerated/screenState.enum";
 import { notifications } from "@mantine/notifications";
+import { IconSearch } from '@tabler/icons-react'
+import { Configuracao } from "../../model/configuracao";
+import { ScreenState } from "../../model/enumerated/screenState.enum";
 import { requiredField } from "../../electron/utils/validation.util";
 
 const Config: FC = () => {
@@ -54,13 +54,23 @@ const Config: FC = () => {
     try {
       await ninja.postgres.reconnect();
       await ninja.bitrix.checkConfig();
+
+      if (!(await ninja.config.hasReadAndWriteAccess(values.downloadPath))) {
+        throw new Error(`O usuário não tem permissão de escrita e/ou leitura no caminho: ${values.downloadPath}.`);
+      }
+      if (!(await ninja.config.hasReadAndWriteAccess(values.dbBackupFolder))) {
+        throw new Error(`O usuário não tem permissão de escrita e/ou leitura no caminho: ${values.dbBackupFolder}.`);
+      }
+      if (!(await ninja.config.hasReadAndWriteAccess(values.issueFolder))) {
+        throw new Error(`O usuário não tem permissão de escrita e/ou leitura no caminho: ${values.issueFolder}.`);
+      }
       if (ninja.postgres.hasConnection()) {
         ninja.main.setScreenState(ScreenState.DASHBOARD);
       }
     } catch (error) {
       notifications.show({
         title: 'Erro',
-        message: 'Não foi possível conectar no banco com as informações fornecidas. Detalhes: ' + error,
+        message: 'Houve algum erro nas validações finais das informações enviadas. Detalhes: ' + error,
         color: 'red'
       })
     }

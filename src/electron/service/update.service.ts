@@ -2,7 +2,6 @@ import { app } from "electron";
 import { join } from "path";
 import githubApi from "../api/github.api";
 import { gt, isEmpty } from "lodash";
-import downloadService from "./download.service";
 import { writeFileSync } from "original-fs"
 
 const REGEX_ASAR_EXTENSION = /.*\.asar$/;

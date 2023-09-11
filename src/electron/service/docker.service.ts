@@ -1,8 +1,6 @@
 import { Docker } from "node-docker-api";
-import { Exec } from "node-docker-api/lib/container";
 import windowService from "./window.service";
-import { exec, ChildProcess } from "child_process";
-import { utilityProcess } from "electron";
+import { exec } from "child_process";
 
 class DockerService {
 
@@ -17,7 +15,6 @@ class DockerService {
  * @param {filePath:string, nomeBanco:string} params
  */
   async restoreFileDocker (params: {filePath: string, nomeBanco: string, user: string}) {
-    console.log(`pg_restore -U ${params.user} -d ${params.nomeBanco} /opt/bkp/database.backup`);
     this.docker.container.get('postgres').exec.create({
       Cmd: [`/usr/bin/pg_restore`, `-U`, `${params.user}`,  `-v`, `-d`, `${params.nomeBanco}`, `/opt/bkp/database.backup`],
       AttachStdout: true
@@ -27,6 +24,14 @@ class DockerService {
         windowService.appendLog(data.toString());
       })
     });
+  }
+  
+  async criarDockerDatabase(nomeBanco: string): Promise<Object> {
+    return this.docker.container.get('postgres').exec.create({Cmd: ['psql', '-U', 'postgres', '-c', `CREATE DATABASE ${nomeBanco}`]}).then(exec => exec.start({Detach: true}));
+  }
+
+  async droparDockerDatabase(nomeBanco: string): Promise<Object> {
+    return this.docker.container.get('postgres').exec.create({Cmd: ['psql', '-U', 'postgres', '-c', `DROP DATABASE ${nomeBanco}`]}).then(exec => exec.start({Detach: false}));
   }
 
   restoreFileDockerTerminal (params: {filePath: string, nomeBanco: string, user: string}): Promise<string> {
@@ -44,32 +49,26 @@ class DockerService {
     }) 
   }
 
-  async droparDockerDatabase(nomeBanco: string): Promise<Object> {
-    return this.docker.container.get('postgres').exec.create({Cmd: ['psql', '-U', 'postgres', '-c', `DROP DATABASE ${nomeBanco}`]}).then(exec => exec.start({Detach: false}));
-  }
-
   droparDockerDatabaseTerminal(nomeBanco: string): Promise<String> {
     return new Promise((resolve, reject) => {
       exec(`docker exec -t postgres psql -U postgres -c "DROP DATABASE ${nomeBanco}"`, (error, stdout, stderr) => {
         if(error)
-          reject(stdout);
+          reject(stderr);
         resolve(stdout);
       })
     })
   }
   
-  async criarDockerDatabase(nomeBanco: string): Promise<Object> {
-    return this.docker.container.get('postgres').exec.create({Cmd: ['psql', '-U', 'postgres', '-c', `CREATE DATABASE ${nomeBanco}`]}).then(exec => exec.start({Detach: true}));
-  }
-  
   criarDockerDatabaseTerminal(nomeBanco: string): Promise<String> {
-    return new Promise((resolve, reject) =>{ exec(`docker exec -t postgres psql -U postgres -c "CREATE DATABASE ${nomeBanco}"`,(error, stdout, stderr) => {
-      if (error) {
-        reject(error)
-        return;
-      }
-      resolve(stdout);
-    })});
+    return new Promise((resolve, reject) =>{ 
+      exec(`docker exec -t postgres psql -U postgres -c "CREATE DATABASE ${nomeBanco}"`,(error, stdout, stderr) => {
+        if (error) {
+          reject(error)
+          return;
+        }
+        resolve(stdout);
+      })
+    });
   }
 
 }

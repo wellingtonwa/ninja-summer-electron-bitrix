@@ -33,7 +33,6 @@ app.on('window-all-closed', () => {
 
   let response = windowService.exitConfirmation();
 
-  console.log(response);
   if (response == 1) {
     createWindow();
   }

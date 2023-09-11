@@ -1,4 +1,3 @@
-import { writeFileSync } from "original-fs";
 import path  from 'path';
 import windowService from "../service/window.service";
 import os from 'os';

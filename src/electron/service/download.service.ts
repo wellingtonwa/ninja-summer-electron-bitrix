@@ -17,9 +17,6 @@ class DownloadService {
               var cur = 0;
               var total = len / 1048576; //1048576 - bytes in  1Megabyte
 
-              console.log("Variavel Total: " + total);
-              console.log("logFunction: " + logFunction);
-              console.log("Resultado da checagem" + logFunction && total);
               if (logFunction  && total>0) {
                 try {
                   logFunction.appendLog(`Tamanho do arquivo de download: ${total.toFixed(2)}`);

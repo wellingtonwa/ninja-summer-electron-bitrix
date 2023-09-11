@@ -1,6 +1,4 @@
 import { RestoreLink } from '../../model/restoreLink';
-import { EVENT_APPEND_LOG } from '../../constants';
-import { download } from '../utils/httpsDownload';
 import windowService from './window.service';
 import downloadService from './download.service';
 

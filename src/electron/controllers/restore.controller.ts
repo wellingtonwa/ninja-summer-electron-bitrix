@@ -1,14 +1,12 @@
-import { EVENT_APPEND_LOG, URL_SCRIPT_OBRIGATORIO } from "../../constants";
+import { URL_SCRIPT_OBRIGATORIO } from "../../constants";
 import { Configuracao } from "../../model/configuracao";
 import { RestoreLink } from "../../model/restoreLink";
 import restoreService from "../service/restore.service";
 import windowService from "../service/window.service";
 import { descompactar, getFileContent } from "../utils/ioUtils";
 import configController from "./config.controller";
-import { copyFileSync } from 'fs';
-import { exec } from 'child_process';
 import dockerService from "../service/docker.service";
-import { rename, renameSync } from "original-fs";
+import { renameSync } from "original-fs";
 import postgresService from "../service/postgres.service";
 import { RestoreArquivo } from "../../model/restoreArquivo";
 

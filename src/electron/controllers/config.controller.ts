@@ -1,6 +1,7 @@
 import { StoreKey } from "../../model/enumerated/storeKey.enum";
 import { Configuracao } from "../../model/configuracao";
 import storeService from "../service/store.service";
+import { canReadAndWrite } from "../utils/ioUtils";
 
 class ConfigController {
   private config: Configuracao;
@@ -18,8 +19,8 @@ class ConfigController {
     storeService.set(StoreKey.CONFIG, value);
   }
 
-  async checkConfiguracao() {
-    
+  async hasReadAndWriteAccess(path: string) {
+    return canReadAndWrite(path);
   }
 
 }

@@ -14,6 +14,17 @@ class PostgresController {
     return await postgresService.dropDatabase(database);
   }
 
+  async hasBinaries() {
+    try {
+      await postgresService.hasBinaries();
+      return true;
+    } catch (error) {
+      console.error(`Erro ao verificar a existência dos binários do postgres. Detalhes: ${error}`);
+      return false;
+    }
+
+  }
+
 }
 
 export default new PostgresController();

@@ -68,6 +68,18 @@ class PostgresService {
     await dockerService.droparDockerDatabaseTerminal(database);
   }
 
+  async hasBinaries() {
+    return new Promise((resolve, reject) => {
+      exec(`pg --version`, (error, stdout, stderr) => {
+        if(error) {
+          reject(error);
+          return;
+        }
+        resolve(stdout);
+      })
+    });
+  }
+
 }
 
 export default new PostgresService();
