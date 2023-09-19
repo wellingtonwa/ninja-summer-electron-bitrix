@@ -5,6 +5,7 @@ import { gt, isEmpty } from "lodash";
 import { writeFileSync } from "original-fs"
 
 const REGEX_ASAR_EXTENSION = /.*\.asar$/;
+const REGEX_VERSION = /(\d+)\.(\d+)\.(\d+)/;
 
 class UpdateService {
   asarPath: string;
@@ -15,14 +16,19 @@ class UpdateService {
 
   async checkUpdate() {
     let retorno = false;
-
     const retornoConsulta = await githubApi.getLatestVersion();
-    
-    if (retornoConsulta && gt(retornoConsulta.tag_name, app.getVersion())) {
-      retorno = true;
-      this.update(retornoConsulta);
+    if (retornoConsulta) {
+      const remoteVersion = retornoConsulta.tag_name.match(REGEX_VERSION);
+      const localVersion = app.getVersion().match(REGEX_VERSION);
+      for(let i = 1; i<4; i++) {
+        if (gt(Number(remoteVersion[i]), Number(localVersion[i]))) {
+          retorno = true;
+          console.log('retorno', retorno);
+          this.update(retornoConsulta);
+          break;
+        }
+      }
     }
-
     return retorno;
   }
 
