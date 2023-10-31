@@ -41,14 +41,22 @@ const Dashboard: FC = () => {
     if (await ninja.bitrix.isActive() && param) {
       const numerosTarefas = param.map(it => getNumeroTarefa(it)).filter(it => !isNull(it));
       setLoadingIssues(numerosTarefas);
-      ninja.bitrix.getDadosTarefa(numerosTarefas).then((result: InformacaoBitrix[]) => {
+      try {
+        const result: InformacaoBitrix[] = await ninja.bitrix.getDadosTarefa(numerosTarefas);
         let dados: Database[] = [];
         for (const database of param) {
           const informacaoBitrix = result.find(informacaoBitrix => informacaoBitrix.id === getNumeroTarefa(database));
           informacaoBitrix ? dados.push({...database, ...{ informacaoBitrix, isTarefa: true }}) : dados.push(database); 
         }
         setDatabases(dados);
-      });
+      } catch (error) {
+        setDatabases(param);
+        notifications.show({
+          title: 'Informação',
+          color: 'blue',
+          message: 'A url de integração com o Bitrix foi definida, porem não foi possível obter uma resposta válida da API.'
+        });
+      }
       setLoadingIssues([]);
     } else if (param && param.length > 0) {
       setDatabases(param);

@@ -3,6 +3,7 @@ export enum  ScreenState {
   DASHBOARD = 'DASHBOARD',
   RESTORE = 'RESTORE',
   UPDATE = 'UPDATE',
+  BYFOLDER = 'BYFOLDER',
 }
 
 export const MAP_SCREEN_STATE: {
@@ -12,4 +13,5 @@ export const MAP_SCREEN_STATE: {
   [ScreenState.DASHBOARD]: '/app/dashboard',
   [ScreenState.RESTORE]: '/app/restore',
   [ScreenState.UPDATE]: '/update',
+  [ScreenState.BYFOLDER]: 'app/byfolder',
 }

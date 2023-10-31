@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import { ActionIcon, Group, Image, SimpleGrid, Text, Title, Tooltip } from "@mantine/core";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
-import {useClipboard, useDisclosure} from "@mantine/hooks";
-import { IconExternalLink, IconClipboard, IconMessageCircle } from "@tabler/icons-react";
+import { useClipboard } from "@mantine/hooks";
+import { IconExternalLink, IconClipboard } from "@tabler/icons-react";
 
 const link = "https://projetusti.bitrix24.com.br/workgroups/group/:groupId/tasks/task/view/:taskId/";
 
 interface DadosCasoProps {
   dadosCaso: InformacaoBitrix;
+  footerContent?: React.ReactNode | undefined; 
   titleClick?: (url: string) => void;
   viewCommentsCLick?: (dadosCaso: InformacaoBitrix) => void;
 }
 
 
 const DadosCaso = (props: DadosCasoProps) => {
-  const { dadosCaso } = props;
+  const { dadosCaso, footerContent } = props;
   const clipboard = useClipboard({timeout: 500});
 
   return <>
@@ -89,6 +90,7 @@ const DadosCaso = (props: DadosCasoProps) => {
           />
         </Group>
 	   </div>
+    { footerContent }
     </SimpleGrid>
   </>
 }

@@ -3,17 +3,16 @@ import { Provider } from "react-redux"
 import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
-import { useDisclosure } from "@mantine/hooks";
 import { createHashRouter, RouterProvider } from 'react-router-dom'
 import Config from "./page/Config";
 import Dashboard from "./page/dashboard/Dashboard";
 import Layout from "./components/Layout";
 import RouteHandler from "./components/routerHandler/RouterHandler";
+import ByFolder from "./page/byfolder/ByFolder";
 import Restore from "./page/Restore";
 import Splash from "./page/Splash";
 import Update from "./page/Update";
 import store from './store';
- 
 
 
 const router = createHashRouter([
@@ -37,6 +36,10 @@ const router = createHashRouter([
             path: 'restore',
             element: <Restore />,
           },
+          {
+            path: 'byfolder',
+            element: <ByFolder />,
+          },
         ]
       },
       {
@@ -52,8 +55,6 @@ const router = createHashRouter([
 ]);
 
 const App: FC = () => {
-  const [opened, {open, close}] = useDisclosure(false);
-
     return (
       <Provider store={store}>
         <MantineProvider withCSSVariables withGlobalStyles theme={{ colorScheme: 'dark' }}>

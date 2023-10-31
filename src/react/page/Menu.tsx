@@ -2,7 +2,7 @@ import { Drawer, NavLink } from "@mantine/core";
 import React, { FC, useEffect, useState } from "react";
 import { ScreenState } from "../../model/enumerated/screenState.enum";
 import { useDisclosure } from "@mantine/hooks";
-import { IconDashboard, IconDatabase, IconSettings } from "@tabler/icons-react";
+import { IconDashboard, IconDatabase, IconFolderSearch, IconSettings } from "@tabler/icons-react";
 import Log, { LogRefProps } from "./Log";
 
 export interface MenuProps {
@@ -34,6 +34,11 @@ const Menu: FC<MenuProps> = (props) => {
           label="Dashboard"
           onClick={() => navigateTo(ScreenState.DASHBOARD)}
           icon={<IconDashboard/>}
+        />
+        <NavLink
+          label="Visualizar a partir das pastas"
+          onClick={() => navigateTo(ScreenState.BYFOLDER)}
+          icon={<IconFolderSearch/>}
         />
         <NavLink
           label="Restaurar DB"
