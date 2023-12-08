@@ -1,15 +1,23 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import InformacaoBitrix from "../../../model/informacaoBitrix";
+import ComentarioBitrix from "../../../model/comentarioBitrix";
 import { getNumeroTarefa } from "../../../electron/utils/ninja.util";
 import { notifications } from "@mantine/notifications";
 import DadosCaso from "../../components/dadosCaso/DadosCaso";
-import { ActionIcon, Box, Card, Group, Indicator, TextInput, Tooltip } from "@mantine/core";
-import { useDebouncedValue, useFocusTrap } from "@mantine/hooks";
-import { IconFolderOpen } from "@tabler/icons-react";
+import { ActionIcon, Box, Card, Group, Indicator, Modal, TextInput, Tooltip } from "@mantine/core";
+import { useDebouncedValue, useDisclosure, useFocusTrap } from "@mantine/hooks";
+import { IconFolderOpen, IconMessageCircle } from "@tabler/icons-react";
 import { FolderInfo } from "../../../model/folderInfo";
+import ComentariosView from "../dashboard/ComentariosView";
+import DadosComentario from "../../components/dadosComentario/DadosComentario";
 
 const ByFolder: FC = () => {
   const [folders, setFolders] = useState<FolderInfo[]>([]);
+  const [ openedComments, openedCommentsHandlers ] = useDisclosure(false);
+  const [ loadingComments, setLoadingComments ] = useState<boolean>(true);
+  const [ modalContent, setModalContent ] = useState<any>(<></>);
+  const [ tarefaSelecionada, setTarefaSelecionada ] = useState<InformacaoBitrix>(null);
+  const [ comments, setComments ] = useState<ComentarioBitrix[]>([]);
   const tarefas = useRef<InformacaoBitrix[]>([]);
   const [tarefasFiltradas, setTarefasFiltradas] = useState<Map<string, InformacaoBitrix>>(new Map());
   const [termoDePesquisa, setTermoDePesquisa] = useState<string>('');
@@ -22,7 +30,6 @@ const ByFolder: FC = () => {
 
   useEffect(() => {
     filterFolders(termoDePesquisa);
-    console.log("Debounce happened!");
   }, [fieldDbnameDebounced])
 
   const findFolders = async () => {
@@ -73,9 +80,46 @@ const ByFolder: FC = () => {
     }
   }
 
+  const findComentarios = async (informacaoBitrix: InformacaoBitrix) => {
+    setLoadingComments(true);
+    try {
+      setComments(await ninja.bitrix.getComentariosTarefa(informacaoBitrix.id));
+      openedCommentsHandlers.open();
+    } catch (error) {
+      ninja.main.appendLog(`Erro ao carregar comentários: ${error}`)
+      notifications.show({
+        title: 'Erro',
+        color: 'red',
+        message: 'Não foi possível carregar os comentários.',
+      });
+    } finally {
+      setLoadingComments(false);
+    }
+  }
+
+const loadComments = async (dadosTarefa: InformacaoBitrix) => {
+    try {
+      await findComentarios(dadosTarefa);
+      setTarefaSelecionada(dadosTarefa);
+      setModalContent(<DadosComentario comments={comments} dadosTarefa={dadosTarefa}/>);
+      openedCommentsHandlers.open();
+    } catch (error) {
+      notifications.show({
+        message: `Ocorreu um erro ao obter os comentários. Detalhes: ${error}`,
+      })
+    }
+}
+
   const dadosCasoFooterContent  = (dadosCaso?: InformacaoBitrix) => {
     return <>
-      <div>
+      <Modal 
+        title={tarefaSelecionada ? tarefaSelecionada.id : 'Sem número'}
+        opened={openedComments}
+        onClose={openedCommentsHandlers.close}
+      >
+        {modalContent}
+      </Modal>
+      <Group>
         <Tooltip label="Abrir pasta da tarefa">
           <Indicator 
             inline 
@@ -93,7 +137,17 @@ const ByFolder: FC = () => {
             </ActionIcon>
           </Indicator>
         </Tooltip>
-      </div>
+        <Tooltip label={'Mostrar comentários'}>
+              <ActionIcon 
+                onClick={() => loadComments(dadosCaso)}
+                size="lg"
+                color="blue"
+                variant="filled"
+              >
+                <IconMessageCircle/>
+              </ActionIcon>
+            </Tooltip>
+      </Group>
     </>
   }
 
@@ -108,11 +162,13 @@ const ByFolder: FC = () => {
     </Box>
  
     {tarefasFiltradas && Array.from(tarefasFiltradas).map(([key, value]) => (
-      <Card key={key} mb={3}>
-        <DadosCaso dadosCaso={value} footerContent={dadosCasoFooterContent(value)}/>
-      </Card>
+      <>
+        <Card key={key} mb={3}>
+          <DadosCaso dadosCaso={value} footerContent={dadosCasoFooterContent(value)} titleClick={ninja.main.openLink}/>
+        </Card>
+      </>
     ))}
-  </>;
+  </>
 }
 
 export default ByFolder;
