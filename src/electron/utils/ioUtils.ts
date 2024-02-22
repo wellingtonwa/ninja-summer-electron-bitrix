@@ -128,3 +128,22 @@ export const listFiles = async (dirPath: string) => {
       reject(Error("Arquivo não encontrado"))
     });
   };
+
+export const setFileContent = (params: {filePath: String, fileName: String, fileContent: String}) => {
+  return new Promise((resolve, reject) => {
+    if (!params.fileName) {
+      reject('O nome do arquivo não foi informado');
+    }
+    if (!params.filePath) {
+      reject('O caminho para salvar o arquivo não foi informado');
+    }
+    if (!params.fileContent) {
+      reject('O conteúdo do arquivo não foi informado.');
+    }
+    console.log(params.fileContent);
+    fs.writeFile(`${params.filePath}/${params.fileName}`, Buffer.from(params.fileContent, 'utf8'), {flag: 'w'}, (err) => {
+      if (err) reject(err);
+      resolve('ok');
+    });
+  })
+}

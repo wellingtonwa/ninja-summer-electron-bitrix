@@ -74,3 +74,6 @@ export const FIELDS_USED_IN_BITRIX_API = [
 
 export const URL_GITHUB_API = "https://api.github.com/repos/wellingtonwa/ninja-summer-electron-bitrix";
 export const ASAR_NAME = 'app.asar';
+export const REGEX_POSTGRES_BIN_FOLDER = /(?<=\d{2} )\/.*(?=postgres -D)/gm;
+export const REGEX_DOCKER_BIN_FOLDER = /(?<=\d{2} )\/.*(?=postgres -D)/gm;
+export const PG_PASS_FILE_NAME = '.pgpass';

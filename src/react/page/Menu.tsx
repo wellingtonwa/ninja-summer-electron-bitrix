@@ -1,9 +1,7 @@
 import { Drawer, NavLink } from "@mantine/core";
 import React, { FC, useEffect, useState } from "react";
 import { ScreenState } from "../../model/enumerated/screenState.enum";
-import { useDisclosure } from "@mantine/hooks";
 import { IconDashboard, IconDatabase, IconFolderSearch, IconSettings } from "@tabler/icons-react";
-import Log, { LogRefProps } from "./Log";
 
 export interface MenuProps {
   state: boolean;

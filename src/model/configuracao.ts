@@ -7,6 +7,7 @@ export interface Configuracao {
   dbPrefix: string;
   dbDefaultDatabase: string;
   dbIgnore: string;
+  dbDocker: boolean;
   downloadPath: string;
   issueFolder?: string;
   configVersion?: string;

@@ -1,6 +1,6 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useForm } from "@mantine/form";
-import { ActionIcon, Box, Button, Group, PasswordInput, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Box, Button, Checkbox, Group, PasswordInput, Switch, TextInput, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconSearch } from '@tabler/icons-react'
 import { Configuracao } from "../../model/configuracao";
@@ -9,6 +9,8 @@ import { requiredField } from "../../electron/utils/validation.util";
 
 const Config: FC = () => {
 
+  const [hasBinaries, setHasBinaries] = useState<boolean>(false);
+
   useEffect(() => {
     setFormValuesFromConfig();
   }, []);
@@ -16,9 +18,10 @@ const Config: FC = () => {
 
   const setFormValuesFromConfig = async () => {
     const config = await ninja.config.getConfiguracao();
+    setHasBinaries(await ninja.postgres.hasBinaries());
     if (config){
       const configEntries = Object.entries(config);
-      configEntries.forEach(entry => form.setFieldValue(entry[0], entry[1] || null));
+      configEntries.forEach(entry => form.setFieldValue(entry[0], entry[1]));
     }
   }
 
@@ -32,6 +35,7 @@ const Config: FC = () => {
       dbPrefix: '%',
       dbIgnore: 'postgres',
       dbPort: '5432',
+      dbDocker: true,
       downloadPath: null,
       issueFolder: null,
       bitrixApiURL: null,
@@ -95,6 +99,9 @@ const Config: FC = () => {
           <TextInput withAsterisk label="DB - Port" {...form.getInputProps('dbPort')}/>
           <TextInput withAsterisk label="DB - database" {...form.getInputProps('dbDefaultDatabase')}/>
           <TextInput withAsterisk label="Prefixo do nome do banco" {...form.getInputProps('dbPrefix')}/>
+          <Group mt="md" position="left">
+            <Checkbox label="O docker está rodando em um container docker" {...form.getInputProps('dbDocker', {type: 'checkbox'})} disabled={!hasBinaries}/>
+          </Group>
           <TextInput label="URL de integração com Bitrix" {...form.getInputProps('bitrixApiURL')}/>
           <Tooltip label={form.values.dbBackupFolder || ''} disabled={!form.values.dbBackupFolder}>
             <Group mt="md" position="left">

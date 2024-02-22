@@ -1,21 +1,21 @@
 import { URL_SCRIPT_OBRIGATORIO } from "../../constants";
 import { Configuracao } from "../../model/configuracao";
 import { RestoreLink } from "../../model/restoreLink";
-import restoreService from "../service/restore.service";
-import windowService from "../service/window.service";
-import { descompactar, getFileContent } from "../utils/ioUtils";
-import configController from "./config.controller";
-import dockerService from "../service/docker.service";
-import { renameSync } from "original-fs";
-import postgresService from "../service/postgres.service";
 import { RestoreArquivo } from "../../model/restoreArquivo";
+import restoreService from "../service/restore.service";
+import dockerService from "../service/docker.service";
+import postgresService from "../service/postgres.service";
+import windowService from "../service/window.service";
+import configController from "./config.controller";
+import { descompactar, getFileContent } from "../utils/ioUtils";
+import { renameSync } from "original-fs";
 
 const REGEX_ZIP_FILE = ".*\.zip$";
 
 class RestoreController {
 
   async restoreDatabase(values: RestoreLink | RestoreArquivo) {
-    let { downloadPath, dbBackupFolder, dbUser}: Configuracao = await configController.getConfiguracao();
+    let { downloadPath, dbBackupFolder, dbUser, dbDocker }: Configuracao = await configController.getConfiguracao();
 
     let filePath;
     if ('link' in values) {
@@ -40,21 +40,33 @@ class RestoreController {
 
     try {
       windowService.appendLog(`Dropando o banco: ${values.nomeBanco}`);
-      await dockerService.droparDockerDatabaseTerminal(values.nomeBanco);
+      if (dbDocker) {
+        await postgresService.dropDatabase(values.nomeBanco);
+      } else {
+        await dockerService.droparDockerDatabaseTerminal(values.nomeBanco);
+      }
     } catch(ignore) {
       windowService.appendLog(`O banco de dados ${values.nomeBanco} não existe ou está em uso. Detalhes: ${ignore}`);
     }
 
     try {
       windowService.appendLog(`Criando banco: ${values.nomeBanco}`);
-      await dockerService.criarDockerDatabaseTerminal(values.nomeBanco);
+      if (dbDocker) {
+        await dockerService.criarDockerDatabaseTerminal(values.nomeBanco);
+      } else {
+        await postgresService.createDataBase(values.nomeBanco);
+      }
     } catch(ignore) {
       windowService.appendLog(`O banco de dados ${values.nomeBanco} não existe ou está em uso.`);
     }
 
     try {
       windowService.appendLog(`Restaurando a base de dados: ${values.nomeBanco}`);
-      await dockerService.restoreFileDockerTerminal({filePath:"", nomeBanco: values.nomeBanco, user: dbUser});
+      if (dbDocker) {
+        await dockerService.restoreFileDockerTerminal({filePath:"", nomeBanco: values.nomeBanco, user: dbUser});
+      } else {
+        await postgresService.restoreDatabase({filePath: dbBackupFolder, database: values.nomeBanco});
+      }
     } catch(error) {
       postgresService.reconnect();
       windowService.appendLog(`Houve um erro ao restaurar o banco: ${error}`);

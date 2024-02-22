@@ -15,14 +15,11 @@ class PostgresController {
   }
 
   async hasBinaries() {
-    try {
-      await postgresService.hasBinaries();
-      return true;
-    } catch (error) {
-      console.error(`Erro ao verificar a existência dos binários do postgres. Detalhes: ${error}`);
-      return false;
-    }
+    return await postgresService.hasBinaries();
+  }
 
+  async getBinariesPath() {
+    return await postgresService.getBinariesPath();
   }
 
 }

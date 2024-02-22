@@ -35,7 +35,24 @@ const ByFolder: FC = () => {
   const findFolders = async () => {
     const pastas:FolderInfo[] = await ninja.byFolder.listFolder();
     setFolders(await ninja.byFolder.listFolder());
-    tarefas.current = await ninja.bitrix.getDadosTarefa(pastas.map((pasta: FolderInfo) => getNumeroTarefa(pasta.nome)));
+    if (await ninja.bitrix.isActive()) {
+      try {
+        tarefas.current = await ninja.bitrix.getDadosTarefa(pastas.map((pasta: FolderInfo) => getNumeroTarefa(pasta.nome)));
+      } catch (error) {
+          notifications.show({
+            title: 'Informação',
+            color: 'blue',
+            message: 'A url de integração com o Bitrix foi definida, porem não foi possível obter uma resposta válida da API.'
+          });
+        
+      }
+    } else {
+      notifications.show({
+        title: 'Informação',
+        color: 'blue',
+        message: 'A url de integração com o Bitrix não foi definida. Para definir acesse as configurações.'
+      });
+    }
     filterFolders(termoDePesquisa);
   }
    

@@ -1,13 +1,25 @@
 import { Docker } from "node-docker-api";
 import windowService from "./window.service";
 import { exec } from "child_process";
+import { findProcess } from "../utils/system.util";
+import { REGEX_DOCKER_BIN_FOLDER } from "../../constants";
+import { isEmpty } from "lodash";
 
 class DockerService {
 
   docker: Docker;
+  binariesPath: String;
+  hasBinaries: Boolean;
 
   constructor() {
-    this.docker = new Docker({ socketPath: '/var/run/docker.sock' });
+    this.findBinariesPath();
+    if (this.hasBinaries) {
+      this.docker = new Docker({ socketPath: '/var/run/docker.sock' });
+    }
+  }
+
+  getHasBinaries(): Boolean {
+    return this.hasBinaries;
   }
 
   /**
@@ -59,7 +71,7 @@ class DockerService {
     })
   }
   
-  criarDockerDatabaseTerminal(nomeBanco: string): Promise<String> {
+  criarDockerDatabaseTerminal(nomeBanco: String): Promise<String> {
     return new Promise((resolve, reject) =>{ 
       exec(`docker exec -t postgres psql -U postgres -c "CREATE DATABASE ${nomeBanco}"`,(error, stdout, stderr) => {
         if (error) {
@@ -71,6 +83,20 @@ class DockerService {
     });
   }
 
+  async findBinariesPath() {
+    let resultado: String = null;
+    try {
+      resultado = await findProcess('dockerd', '| grep -- -H');
+      if (resultado && !isEmpty(resultado.match(REGEX_DOCKER_BIN_FOLDER))) {
+        this.binariesPath = resultado.match(REGEX_DOCKER_BIN_FOLDER)[0];
+        this.hasBinaries = true;
+      }
+    } catch (error) {
+      this.binariesPath = '';
+      this.hasBinaries = false;
+      console.log(`Erro ao tentar obter o caminho dos binários do postgres:\n Detalhes: ${error}`)
+    }
+  }
 }
 
 export default new DockerService();
