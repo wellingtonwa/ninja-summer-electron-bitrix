@@ -20,10 +20,11 @@ class UpdateService {
     if (retornoConsulta) {
       const remoteVersion = retornoConsulta.tag_name.match(REGEX_VERSION);
       const localVersion = app.getVersion().match(REGEX_VERSION);
+      console.log(remoteVersion, localVersion);
       for(let i = 1; i<4; i++) {
         if (gt(Number(remoteVersion[i]), Number(localVersion[i]))) {
           retorno = true;
-          console.log('retorno', retorno);
+          console.log('retorno', retorno, remoteVersion[i], localVersion[i]);
           this.update(retornoConsulta);
           break;
         }

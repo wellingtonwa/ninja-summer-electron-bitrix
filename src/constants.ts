@@ -1,8 +1,8 @@
 export const EVENT_SCREEN_STATE_CHANGE = 'mainScreen';
 export const EVENT_APPEND_LOG = 'appendLog';
 export const URL_SCRIPT_OBRIGATORIO = 'https://www.dropbox.com/s/4ub6n18no37o356/scripts.sql?dl=1';
-export const REGEX_NUMEROCASO = /(?<=.*)\d{5}$/g;
-export const REGEX_ISSUEFOLDER = /tarefa\-\d{5}/g;
+export const REGEX_NUMEROCASO = /(?<=.*)\d{5,6}$/g;
+export const REGEX_ISSUEFOLDER = /tarefa\-\d{5,6}/g;
 export const BITRIX_MAIN_URL = /^[\w:\/\.-]+(?=\/rest)/g;
 export const REGEX_STARTS_HTTP = /^https?:\/\//g;
 export const BITRIX_METHODS = {
